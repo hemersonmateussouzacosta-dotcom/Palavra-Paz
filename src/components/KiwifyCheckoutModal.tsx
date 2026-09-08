@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { CheckCircle2, Sparkles, X, Shield, ExternalLink, Settings, Save, RotateCcw, Check, HelpCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle2, Sparkles, X, Shield, ExternalLink } from 'lucide-react';
 import { UserProfile } from '../types';
 import { soundService } from '../services/soundService';
-import { getKiwifyCheckoutUrl, saveKiwifyCheckoutUrl, DEFAULT_KIWIFY_CHECKOUT_URL } from '../config/paymentConfig';
+import { getKiwifyCheckoutUrl } from '../config/paymentConfig';
 
 interface KiwifyCheckoutModalProps {
   isOpen: boolean;
@@ -14,67 +14,37 @@ interface KiwifyCheckoutModalProps {
 export const KiwifyCheckoutModal: React.FC<KiwifyCheckoutModalProps> = ({
   isOpen,
   onClose,
-  profile,
   onActivateSubscription
 }) => {
-  const [customKiwifyUrl, setCustomKiwifyUrl] = useState(getKiwifyCheckoutUrl());
-  const [activationCode, setActivationCode] = useState('');
-  const [showConfigLink, setShowConfigLink] = useState(false);
   const [simulatedSuccess, setSimulatedSuccess] = useState(false);
-  const [saveSuccessMessage, setSaveSuccessMessage] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      setCustomKiwifyUrl(getKiwifyCheckoutUrl());
-      setSaveSuccessMessage(false);
-    }
-  }, [isOpen]);
 
   if (!isOpen) return null;
-
-  const isExpired = profile.subscriptionStatus === 'expired' || profile.trialDaysUsed >= 3;
 
   const handleSimulatePayment = () => {
     soundService.playChime(659, 3);
     setSimulatedSuccess(true);
     setTimeout(() => {
-      onActivateSubscription(activationCode || 'KWFY-' + Math.floor(100000 + Math.random() * 900000));
+      onActivateSubscription('KWFY-' + Math.floor(100000 + Math.random() * 900000));
       onClose();
     }, 1200);
   };
 
   const handleOpenKiwify = () => {
-    const activeUrl = customKiwifyUrl.trim() || DEFAULT_KIWIFY_CHECKOUT_URL;
+    const activeUrl = getKiwifyCheckoutUrl();
     window.open(activeUrl, '_blank', 'noopener,noreferrer');
-  };
-
-  const handleSaveUrl = () => {
-    saveKiwifyCheckoutUrl(customKiwifyUrl.trim());
-    setSaveSuccessMessage(true);
-    soundService.playChime(528, 1.2);
-    setTimeout(() => setSaveSuccessMessage(false), 3000);
-  };
-
-  const handleResetUrl = () => {
-    setCustomKiwifyUrl(DEFAULT_KIWIFY_CHECKOUT_URL);
-    saveKiwifyCheckoutUrl(DEFAULT_KIWIFY_CHECKOUT_URL);
-    setSaveSuccessMessage(true);
-    setTimeout(() => setSaveSuccessMessage(false), 2500);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/75 backdrop-blur-md overflow-y-auto animate-fadeIn">
       <div className="bg-stone-50 border border-stone-200 rounded-2xl max-w-xl w-full p-5 sm:p-7 shadow-2xl relative text-stone-800 my-auto">
-        {/* Close button only if not locked strictly */}
-        {!isExpired && (
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1.5 rounded-full hover:bg-stone-200 transition"
-            aria-label="Fechar modal"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        )}
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1.5 rounded-full hover:bg-stone-200 transition cursor-pointer"
+          aria-label="Fechar modal"
+        >
+          <X className="w-5 h-5" />
+        </button>
 
         {/* Header with Kiwify Badge */}
         <div className="text-center mb-5">
@@ -87,7 +57,7 @@ export const KiwifyCheckoutModal: React.FC<KiwifyCheckoutModalProps> = ({
             Desbloqueie o Devocional Completo
           </h2>
           <p className="text-xs sm:text-sm text-stone-600 max-w-md mx-auto">
-            Aprofunde sua intimidade diária com Deus, com todos os Salmos, orações guiadas sem distrações e áudio narrado.
+            Aprofunde sua intimidade diária com Deus, com todos os 150 Salmos, orações guiadas sem distrações e áudio narrado.
           </p>
         </div>
 
@@ -181,98 +151,22 @@ export const KiwifyCheckoutModal: React.FC<KiwifyCheckoutModalProps> = ({
             id="btn-simulate-activation"
             onClick={handleSimulatePayment}
             disabled={simulatedSuccess}
-            className="w-full py-2.5 px-4 bg-stone-900 hover:bg-stone-800 text-amber-200 font-semibold rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 border border-stone-700 shadow-sm"
+            className="w-full py-2.5 px-4 bg-stone-900 hover:bg-stone-800 text-amber-200 font-semibold rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 border border-stone-700 shadow-sm cursor-pointer"
           >
             <Sparkles className="w-4 h-4 text-amber-400" />
             {simulatedSuccess ? 'Assinatura Aprovada com Sucesso!' : 'Simular Assinatura Aprovada (Ativação Instantânea)'}
           </button>
         </div>
 
-        {/* Footer info and link configurator */}
-        <div className="text-center text-[11px] text-stone-500 space-y-2">
+        {/* Footer info */}
+        <div className="text-center text-[11px] text-stone-500 space-y-1">
           <div className="flex items-center justify-center gap-1">
             <Shield className="w-3.5 h-3.5 text-emerald-600" />
             <span>Transação processada com criptografia de ponta a ponta pela Kiwify.</span>
           </div>
-
-          <div className="pt-1">
-            <button
-              id="btn-toggle-config-kiwify-link"
-              onClick={() => setShowConfigLink(!showConfigLink)}
-              className="inline-flex items-center gap-1.5 text-amber-800 hover:text-amber-950 font-medium bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-lg text-xs transition"
-            >
-              <Settings className="w-3.5 h-3.5 text-amber-700" />
-              <span>{showConfigLink ? 'Fechar Configuração do Link' : '⚙️ Como colocar o seu Link da Kiwify'}</span>
-            </button>
-          </div>
-
-          {showConfigLink && (
-            <div className="mt-3 p-4 bg-white border border-amber-200 rounded-xl text-left shadow-sm space-y-3 animate-fadeIn">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 font-bold text-xs text-stone-900">
-                  <HelpCircle className="w-4 h-4 text-amber-600" />
-                  <span>Passo a passo para colocar seu link:</span>
-                </div>
-                {saveSuccessMessage && (
-                  <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                    <Check className="w-3 h-3" /> Link salvo!
-                  </span>
-                )}
-              </div>
-
-              <ol className="list-decimal list-inside text-[11px] text-stone-600 space-y-1 bg-stone-50 p-2.5 rounded-lg border border-stone-200">
-                <li>Acesse seu painel em <strong>dashboard.kiwify.com.br</strong>.</li>
-                <li>Vá no menu <strong>Produtos</strong> e abra sua oferta de assinatura do app.</li>
-                <li>Copie o <strong>Link do Checkout</strong> (ex: <code className="text-amber-900 font-mono bg-amber-50 px-1 rounded">https://pay.kiwify.com.br/abc1234</code>).</li>
-                <li>Cole no campo abaixo e clique em <strong>Salvar Link</strong>.</li>
-              </ol>
-
-              <div>
-                <label htmlFor="kiwify-url-input" className="block text-[11px] font-semibold text-stone-800 mb-1">
-                  Cole aqui o Link do seu Checkout Kiwify:
-                </label>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <input
-                    id="kiwify-url-input"
-                    type="url"
-                    value={customKiwifyUrl}
-                    onChange={(e) => setCustomKiwifyUrl(e.target.value)}
-                    className="flex-1 px-3 py-2 text-xs border border-stone-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono text-stone-900"
-                    placeholder="https://pay.kiwify.com.br/seu-codigo"
-                  />
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button
-                      id="btn-save-kiwify-link"
-                      onClick={handleSaveUrl}
-                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm transition cursor-pointer"
-                    >
-                      <Save className="w-3.5 h-3.5" />
-                      <span>Salvar Link</span>
-                    </button>
-                    <button
-                      id="btn-reset-kiwify-link"
-                      onClick={handleResetUrl}
-                      title="Restaurar link padrão"
-                      className="p-2 border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-600 rounded-lg transition"
-                    >
-                      <RotateCcw className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-[10px] text-stone-500">
-                <span>Dica: Para fixar em definitivo no código, edite o arquivo <strong className="font-mono text-stone-700">src/config/paymentConfig.ts</strong>.</span>
-                <button
-                  onClick={handleOpenKiwify}
-                  className="text-amber-800 font-bold hover:underline inline-flex items-center gap-1"
-                >
-                  <span>Testar link</span>
-                  <ExternalLink className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
-          )}
+          <p className="text-[10px] text-stone-400">
+            Acesso liberado imediatamente após a confirmação do pagamento no Kiwify.
+          </p>
         </div>
       </div>
     </div>

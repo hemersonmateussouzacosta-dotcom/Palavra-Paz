@@ -27,7 +27,6 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
   const [copied, setCopied] = useState(false);
 
   const isPremium = profile.subscriptionStatus === 'premium';
-  const isExpired = profile.subscriptionStatus === 'expired' || profile.trialDaysUsed >= 3;
 
   // Filter prayers
   const filteredPrayers = PRAYERS_DATA.filter((prayer) => {
@@ -41,7 +40,7 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
 
   const handleOpenPrayer = (prayer: Prayer) => {
     // If locked for the user
-    const isLocked = (!isPremium && prayer.isPremium) || isExpired;
+    const isLocked = !isPremium && prayer.isPremium;
     if (isLocked) {
       setLockedPrayerPreview(prayer);
       soundService.playChime(440, 1.2);
@@ -183,7 +182,7 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
       {/* Prayers Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredPrayers.map((prayer) => {
-          const isLocked = (!isPremium && prayer.isPremium) || isExpired;
+          const isLocked = !isPremium && prayer.isPremium;
           const isFreeOption = !prayer.isPremium;
 
           return (

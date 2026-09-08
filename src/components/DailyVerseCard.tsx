@@ -12,6 +12,8 @@ interface DailyVerseCardProps {
   isOfflineSaved?: boolean;
   onToggleOffline?: (id: string, title?: string) => void;
   isPremium?: boolean;
+  selectedDate?: string;
+  onSelectDate?: (dateStr: string) => void;
 }
 
 export const DailyVerseCard: React.FC<DailyVerseCardProps> = ({
@@ -21,10 +23,35 @@ export const DailyVerseCard: React.FC<DailyVerseCardProps> = ({
   onToggleFavorite,
   isOfflineSaved,
   onToggleOffline,
-  isPremium
+  isPremium,
+  selectedDate,
+  onSelectDate
 }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Formatting date for display in Portuguese
+  const formatDateLabel = (dateStr?: string) => {
+    try {
+      const date = dateStr ? new Date(dateStr + 'T12:00:00') : new Date();
+      return date.toLocaleDateString('pt-BR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long'
+      });
+    } catch {
+      return 'Devocional Diário';
+    }
+  };
+
+  const handleShiftDay = (offsetDays: number) => {
+    if (!onSelectDate) return;
+    const current = selectedDate ? new Date(selectedDate + 'T12:00:00') : new Date();
+    current.setDate(current.getDate() + offsetDays);
+    const newStr = current.toISOString().split('T')[0];
+    onSelectDate(newStr);
+  };
+
 
   useEffect(() => {
     audioSpeechService.setStatusCallback((speaking) => {
@@ -74,7 +101,7 @@ export const DailyVerseCard: React.FC<DailyVerseCardProps> = ({
       <div className="absolute top-0 right-0 w-64 h-64 bg-amber-100/40 rounded-full blur-3xl -z-10 pointer-events-none" />
 
       {/* Header tags: Date, Notification pill, Actions */}
-      <div className="flex items-center justify-between flex-wrap gap-2 mb-4 pb-3 border-b border-amber-100">
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-3 pb-3 border-b border-amber-100">
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100/80 text-amber-900 border border-amber-300/60">
             <Sparkles className="w-3.5 h-3.5 text-amber-600" />
@@ -140,6 +167,43 @@ export const DailyVerseCard: React.FC<DailyVerseCardProps> = ({
             {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
           </button>
         </div>
+      </div>
+
+      {/* Date & 365 Days Navigator Bar */}
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-4 bg-amber-50/70 px-3.5 py-2 rounded-xl border border-amber-200/60 text-xs">
+        <div className="flex items-center gap-1.5 text-stone-800 font-semibold">
+          <Calendar className="w-3.5 h-3.5 text-amber-700" />
+          <span className="capitalize">{formatDateLabel(verse.date || selectedDate)}</span>
+          <span className="text-[10px] text-amber-900 bg-amber-200/70 px-1.5 py-0.5 rounded font-medium">
+            Renovado Todo Dia
+          </span>
+        </div>
+
+        {onSelectDate && (
+          <div className="flex items-center gap-1 text-[11px]">
+            <button
+              onClick={() => handleShiftDay(-1)}
+              className="px-2 py-1 rounded bg-white border border-stone-200 hover:bg-stone-50 text-stone-700 transition active:scale-95"
+              title="Ver devocional do dia anterior"
+            >
+              &larr; Anterior
+            </button>
+            <button
+              onClick={() => onSelectDate(new Date().toISOString().split('T')[0])}
+              className="px-2 py-1 rounded bg-amber-600 text-white font-bold hover:bg-amber-700 transition active:scale-95 shadow-xs"
+              title="Ir para o devocional de hoje"
+            >
+              Hoje
+            </button>
+            <button
+              onClick={() => handleShiftDay(1)}
+              className="px-2 py-1 rounded bg-white border border-stone-200 hover:bg-stone-50 text-stone-700 transition active:scale-95"
+              title="Ver próximo devocional"
+            >
+              Próximo &rarr;
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Main Scripture Text */}

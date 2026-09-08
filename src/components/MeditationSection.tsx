@@ -27,7 +27,6 @@ export const MeditationSection: React.FC<MeditationSectionProps> = ({
   const [completedNotification, setCompletedNotification] = useState(false);
 
   const isPremium = profile.subscriptionStatus === 'premium';
-  const isExpired = profile.subscriptionStatus === 'expired' || profile.trialDaysUsed >= 3;
 
   // Breathing cycle animation timer (4s inspire, 4s segure, 4s expire, 2s repouse)
   useEffect(() => {
@@ -91,7 +90,7 @@ export const MeditationSection: React.FC<MeditationSectionProps> = ({
   }, [isPlaying, activeMeditation, currentStageIndex, narrationActive]);
 
   const handleStartMeditation = (med: GuidedMeditation) => {
-    if ((med.isPremium && !isPremium) || isExpired) {
+    if (med.isPremium && !isPremium) {
       onOpenCheckout();
       return;
     }
@@ -258,7 +257,7 @@ export const MeditationSection: React.FC<MeditationSectionProps> = ({
       {/* Meditation Cards List */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {GUIDED_MEDITATIONS.map((med) => {
-          const isLocked = (med.isPremium && !isPremium) || isExpired;
+          const isLocked = med.isPremium && !isPremium;
           return (
             <div
               key={med.id}

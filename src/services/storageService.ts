@@ -1,41 +1,86 @@
-import { PracticeLog, UserProfile } from '../types';
+import { PracticeLog, UserProfile, AppAdminConfig } from '../types';
 
 const PROFILE_STORAGE_KEY = 'palavra_paz_user_profile';
 const LOGS_STORAGE_KEY = 'palavra_paz_practice_logs';
+const ADMIN_CONFIG_STORAGE_KEY = 'palavra_paz_admin_config';
+const ADMIN_SESSION_KEY = 'palavra_paz_admin_logged_in';
+
+export const DEFAULT_ADMIN_CONFIG: AppAdminConfig = {
+  adminPin: '1234',
+  kiwifyCheckoutUrl: 'https://pay.kiwify.com.br/vxSeONK',
+  subscriptionPrice: '14,90',
+  announcementBanner: 'Bem-vindo(a) ao Palavra & Paz! Um novo devocional diário é preparado a cada amanhecer.',
+  announcementActive: false
+};
 
 export class StorageService {
+  public static getAdminConfig(): AppAdminConfig {
+    try {
+      const stored = localStorage.getItem(ADMIN_CONFIG_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Garante que o link do Kiwify seja o oficial atualizado
+        if (!parsed.kiwifyCheckoutUrl || parsed.kiwifyCheckoutUrl.includes('assinatura-devocional-palavra-paz')) {
+          parsed.kiwifyCheckoutUrl = DEFAULT_ADMIN_CONFIG.kiwifyCheckoutUrl;
+        }
+        return { ...DEFAULT_ADMIN_CONFIG, ...parsed };
+      }
+    } catch (e) {
+      console.warn('Erro ao ler admin config:', e);
+    }
+    return DEFAULT_ADMIN_CONFIG;
+  }
+
+  public static saveAdminConfig(config: AppAdminConfig): void {
+    try {
+      localStorage.setItem(ADMIN_CONFIG_STORAGE_KEY, JSON.stringify(config));
+    } catch (e) {
+      console.warn('Erro ao salvar admin config:', e);
+    }
+  }
+
+  public static isAdminLoggedIn(): boolean {
+    try {
+      return localStorage.getItem(ADMIN_SESSION_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  }
+
+  public static setAdminLoggedIn(loggedIn: boolean): void {
+    try {
+      if (loggedIn) {
+        localStorage.setItem(ADMIN_SESSION_KEY, 'true');
+      } else {
+        localStorage.removeItem(ADMIN_SESSION_KEY);
+      }
+    } catch (e) {
+      console.warn('Erro ao salvar sessão admin:', e);
+    }
+  }
+
   public static getProfile(): UserProfile {
     try {
       const stored = localStorage.getItem(PROFILE_STORAGE_KEY);
       if (stored) {
         const parsed: UserProfile = JSON.parse(stored);
-        // Calculate days since start
-        const start = new Date(parsed.startDate).getTime();
-        const now = Date.now();
-        const diffDays = Math.max(0, Math.floor((now - start) / (1000 * 60 * 60 * 24)));
-
-        // If not premium and past 3 days (trial expired)
+        // Sem teste grátis ou bloqueio por expiração de dias: ou é premium ou é free
         if (parsed.subscriptionStatus !== 'premium') {
-          if (diffDays >= 3) {
-            parsed.subscriptionStatus = 'expired';
-          } else {
-            parsed.subscriptionStatus = 'trial';
-          }
+          parsed.subscriptionStatus = 'free';
         }
-        parsed.trialDaysUsed = diffDays;
         return parsed;
       }
     } catch (e) {
       console.warn('Storage read error:', e);
     }
 
-    // Default new user profile
+    // Perfil inicial padrão para novos usuários (Plano Gratuito)
     const today = new Date().toISOString();
     const newProfile: UserProfile = {
       name: 'Irmão(ã) em Cristo',
       email: '',
       startDate: today,
-      subscriptionStatus: 'trial',
+      subscriptionStatus: 'free',
       trialDaysUsed: 0,
       dailyGoalMinutes: 15,
       streakDays: 1,
@@ -59,7 +104,7 @@ export class StorageService {
   public static activatePremium(kiwifyId: string = 'KWFY-' + Math.floor(100000 + Math.random() * 900000)): UserProfile {
     const profile = this.getProfile();
     const expiry = new Date();
-    expiry.setMonth(expiry.getMonth() + 1); // 30 days recurring
+    expiry.setMonth(expiry.getMonth() + 1); // 30 dias recorrente
 
     profile.subscriptionStatus = 'premium';
     profile.kiwifyTransactionId = kiwifyId;
@@ -70,28 +115,17 @@ export class StorageService {
 
   public static cancelOrResetSubscription(): UserProfile {
     const profile = this.getProfile();
-    profile.subscriptionStatus = 'trial';
+    profile.subscriptionStatus = 'free';
     profile.kiwifyTransactionId = undefined;
     profile.subscriptionExpiryDate = undefined;
     this.saveProfile(profile);
     return profile;
   }
 
-  // Developer / user simulator for testing trial days
-  public static simulateTrialDay(day: number): UserProfile {
+  // Alterna para plano gratuito (sem teste expirado)
+  public static simulateTrialDay(_day: number): UserProfile {
     const profile = this.getProfile();
-    const newStart = new Date();
-    newStart.setDate(newStart.getDate() - day);
-    profile.startDate = newStart.toISOString();
-    profile.trialDaysUsed = day;
-
-    if (profile.subscriptionStatus !== 'premium') {
-      if (day >= 3) {
-        profile.subscriptionStatus = 'expired';
-      } else {
-        profile.subscriptionStatus = 'trial';
-      }
-    }
+    profile.subscriptionStatus = 'free';
     this.saveProfile(profile);
     return profile;
   }

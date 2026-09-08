@@ -1,4 +1,4 @@
-export type SubscriptionStatus = 'trial' | 'premium' | 'expired';
+export type SubscriptionStatus = 'free' | 'premium' | 'trial' | 'expired';
 
 export interface UserProfile {
   name: string;
@@ -89,3 +89,12 @@ export interface NotificationSettings {
   morningTime: string; // e.g. "06:30"
   hasPermission: boolean;
 }
+
+export interface AppAdminConfig {
+  adminPin: string;
+  kiwifyCheckoutUrl: string;
+  subscriptionPrice: string;
+  announcementBanner: string;
+  announcementActive: boolean;
+}
+

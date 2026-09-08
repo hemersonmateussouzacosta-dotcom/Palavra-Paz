@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UserProfile, PracticeLog } from './types';
+import { UserProfile, PracticeLog, AppAdminConfig } from './types';
 import { StorageService } from './services/storageService';
 import { getTodayVerse } from './data/versesData';
 import { Navbar } from './components/Navbar';
@@ -14,7 +14,9 @@ import { ProgressDashboard } from './components/ProgressDashboard';
 import { KiwifyCheckoutModal } from './components/KiwifyCheckoutModal';
 import { MorningNotificationModal } from './components/MorningNotificationModal';
 import { OfflineLockedModal } from './components/OfflineLockedModal';
+import { AdminPanelModal } from './components/AdminPanelModal';
 import { soundService } from './services/soundService';
+import { Bell, ShieldAlert, Sparkles, X } from 'lucide-react';
 
 export default function App() {
   const [profile, setProfile] = useState<UserProfile>(StorageService.getProfile());
@@ -22,27 +24,33 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'inicio' | 'meditacao' | 'salmos' | 'cronometro' | 'estudos' | 'progresso'>('inicio');
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(StorageService.isAdminLoggedIn());
+  const [adminConfig, setAdminConfig] = useState<AppAdminConfig>(StorageService.getAdminConfig());
+  const [dismissBanner, setDismissBanner] = useState(false);
   const [offlineModalInfo, setOfflineModalInfo] = useState<{ isOpen: boolean; title?: string }>({
     isOpen: false
   });
 
-  const todayVerse = getTodayVerse();
+  // Selected date for devotional browsing (defaults to today)
+  const [selectedDate, setSelectedDate] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
+  const [verseRefreshTrigger, setVerseRefreshTrigger] = useState(0);
 
-  // Check if trial expired on initial load
+  const currentVerse = getTodayVerse(selectedDate);
+
+  // Initialize profile and config
   useEffect(() => {
     const current = StorageService.getProfile();
     setProfile(current);
-    if (current.subscriptionStatus === 'expired') {
-      setIsCheckoutOpen(true);
-    }
+    setIsAdmin(StorageService.isAdminLoggedIn());
+    setAdminConfig(StorageService.getAdminConfig());
   }, []);
 
   const handleSimulateDay = (day: number) => {
     const updated = StorageService.simulateTrialDay(day);
     setProfile(updated);
-    if (updated.subscriptionStatus === 'expired') {
-      setIsCheckoutOpen(true);
-    }
   };
 
   const handleActivateSubscription = (code?: string) => {
@@ -70,8 +78,32 @@ export default function App() {
     setProfile(StorageService.getProfile());
   };
 
+  const handleVerseUpdated = () => {
+    setVerseRefreshTrigger((prev) => prev + 1);
+    setAdminConfig(StorageService.getAdminConfig());
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-stone-100/60 text-stone-900 font-sans selection:bg-amber-200">
+    <div className="min-h-screen flex flex-col bg-stone-100/60 text-stone-900 font-sans selection:bg-amber-200 pb-20 lg:pb-0">
+      {/* Admin Announcement Banner if configured by administrator */}
+      {adminConfig.announcementActive && adminConfig.announcementBanner && !dismissBanner && (
+        <div className="bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white px-4 py-2 text-xs font-semibold shadow-sm flex items-center justify-between">
+          <div className="max-w-6xl mx-auto flex items-center justify-between w-full gap-2">
+            <span className="flex items-center gap-2">
+              <Bell className="w-3.5 h-3.5 text-amber-200 animate-bounce" />
+              <span>{adminConfig.announcementBanner}</span>
+            </span>
+            <button
+              onClick={() => setDismissBanner(true)}
+              className="text-amber-200 hover:text-white p-1"
+              title="Dispensar aviso"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 3-Day Trial / Kiwify Status Banner */}
       <TrialBanner
         profile={profile}
@@ -85,20 +117,24 @@ export default function App() {
         setActiveTab={setActiveTab}
         profile={profile}
         onOpenCheckout={() => setIsCheckoutOpen(true)}
+        onOpenAdmin={() => setIsAdminModalOpen(true)}
+        isAdmin={isAdmin}
       />
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {activeTab === 'inicio' && (
-          <div className="space-y-8 animate-fadeIn">
+          <div className="space-y-8 animate-fadeIn" key={verseRefreshTrigger}>
             {/* Daily Morning Verse Card */}
             <section aria-label="Versículo do Dia">
               <DailyVerseCard
-                verse={todayVerse}
+                verse={currentVerse}
+                selectedDate={selectedDate}
+                onSelectDate={(newDate) => setSelectedDate(newDate)}
                 onOpenNotificationModal={() => setIsNotificationOpen(true)}
-                isFavorite={profile.favoriteIds.includes(todayVerse.id)}
-                onToggleFavorite={() => handleToggleFavorite(todayVerse.id)}
-                isOfflineSaved={profile.savedOfflineIds.includes(todayVerse.id)}
+                isFavorite={profile.favoriteIds.includes(currentVerse.id)}
+                onToggleFavorite={() => handleToggleFavorite(currentVerse.id)}
+                isOfflineSaved={profile.savedOfflineIds.includes(currentVerse.id)}
                 onToggleOffline={handleToggleOffline}
                 isPremium={profile.subscriptionStatus === 'premium'}
               />
@@ -108,7 +144,7 @@ export default function App() {
             <section aria-label="Orações da Manhã e para Acalmar a Alma">
               <div className="mb-4">
                 <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-950">
-                  Orações Diárias & Paz na Alma
+                  Orações Diárias &amp; Paz na Alma
                 </h2>
                 <p className="text-xs sm:text-sm text-stone-600">
                   Orações consagradas para a manhã, para acalmar a ansiedade e para fechar a noite em paz.
@@ -172,6 +208,7 @@ export default function App() {
               practiceLogs={practiceLogs}
               onProfileUpdate={(updated) => setProfile(updated)}
               onOpenCheckout={() => setIsCheckoutOpen(true)}
+              onOpenAdmin={() => setIsAdminModalOpen(true)}
             />
           </div>
         )}
@@ -179,16 +216,17 @@ export default function App() {
 
       {/* Footer */}
       <footer className="mt-auto border-t border-stone-200 bg-white py-6 text-center text-xs text-stone-500">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <span>
-            &copy; {new Date().getFullYear()} <strong>Palavra & Paz</strong> &bull; Devocional Diário Cristão
+            &copy; {new Date().getFullYear()} <strong>Palavra &amp; Paz</strong> &bull; Devocional Diário Cristão
           </span>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center flex-wrap justify-center gap-4">
             <button
               onClick={() => setIsCheckoutOpen(true)}
-              className="text-amber-800 font-semibold hover:underline"
+              className="text-amber-800 font-semibold hover:underline flex items-center gap-1"
             >
-              Assinatura Kiwify (R$ 14,90/mês)
+              <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+              <span>Assinatura Kiwify (R$ 14,90/mês)</span>
             </button>
             <button
               onClick={() => setIsNotificationOpen(true)}
@@ -196,9 +234,31 @@ export default function App() {
             >
               Lembretes Matinais
             </button>
+            <button
+              id="footer-btn-admin"
+              onClick={() => setIsAdminModalOpen(true)}
+              className="text-stone-400 hover:text-amber-800 transition flex items-center gap-1 font-semibold"
+              title="Painel do Administrador"
+            >
+              <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
+              <span>Acesso ADM</span>
+            </button>
           </div>
         </div>
       </footer>
+
+      {/* Admin Panel Modal */}
+      <AdminPanelModal
+        isOpen={isAdminModalOpen}
+        onClose={() => {
+          setIsAdminModalOpen(false);
+          setIsAdmin(StorageService.isAdminLoggedIn());
+          setAdminConfig(StorageService.getAdminConfig());
+        }}
+        profile={profile}
+        onProfileUpdate={(updated) => setProfile(updated)}
+        onVerseUpdated={handleVerseUpdated}
+      />
 
       {/* Kiwify Paywall & Subscription Modal */}
       <KiwifyCheckoutModal

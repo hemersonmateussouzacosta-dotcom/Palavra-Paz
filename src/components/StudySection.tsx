@@ -21,10 +21,9 @@ export const StudySection: React.FC<StudySectionProps> = ({
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   const isPremium = profile.subscriptionStatus === 'premium';
-  const isExpired = profile.subscriptionStatus === 'expired' || profile.trialDaysUsed >= 3;
 
   const handleOpenStudy = (study: StudyMaterial) => {
-    if (!isPremium || isExpired) {
+    if (!isPremium) {
       setLockedStudy(study);
       soundService.playChime(440, 1.2);
       return;
@@ -92,7 +91,7 @@ export const StudySection: React.FC<StudySectionProps> = ({
       {/* Grid of Study Materials */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {STUDY_MATERIALS.map((study) => {
-          const isLocked = !isPremium || isExpired;
+          const isLocked = !isPremium;
           return (
             <div
               key={study.id}
