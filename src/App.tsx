@@ -16,7 +16,7 @@ import { MorningNotificationModal } from './components/MorningNotificationModal'
 import { OfflineLockedModal } from './components/OfflineLockedModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
 import { soundService } from './services/soundService';
-import { Bell, ShieldAlert, Sparkles, X } from 'lucide-react';
+import { Bell, ShieldAlert, Sparkles, X, Instagram, ExternalLink } from 'lucide-react';
 
 export default function App() {
   const [profile, setProfile] = useState<UserProfile>(StorageService.getProfile());
@@ -119,6 +119,7 @@ export default function App() {
         onOpenCheckout={() => setIsCheckoutOpen(true)}
         onOpenAdmin={() => setIsAdminModalOpen(true)}
         isAdmin={isAdmin}
+        instagramUrl={adminConfig.instagramUrl}
       />
 
       {/* Main Content Area */}
@@ -157,6 +158,47 @@ export default function App() {
                 onToggleFavorite={handleToggleFavorite}
                 onToggleOffline={handleToggleOffline}
               />
+            </section>
+
+            {/* Instagram Official Community Banner */}
+            <section
+              id="instagram-community-banner"
+              aria-label="Siga no Instagram"
+              className="bg-gradient-to-r from-stone-900 via-stone-850 to-stone-900 text-stone-100 rounded-3xl p-6 sm:p-7 border border-stone-800 shadow-xl relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-amber-500 via-pink-600 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-pink-900/40 shrink-0">
+                  <Instagram className="w-7 h-7" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-pink-300 bg-pink-500/20 px-2.5 py-0.5 rounded-full border border-pink-500/30">
+                      Instagram Oficial
+                    </span>
+                    <span className="text-xs text-amber-200/90 font-mono font-semibold">
+                      {adminConfig.instagramHandle || '@verdadeiraluzcaminho'}
+                    </span>
+                  </div>
+                  <h3 className="font-serif font-bold text-lg sm:text-xl text-amber-100">
+                    Siga o Verdadeira Luz Caminho
+                  </h3>
+                  <p className="text-xs sm:text-sm text-stone-300 max-w-xl leading-relaxed mt-0.5">
+                    Receba orações em vídeo, mensagens bíblicas de conforto, salmos diários e palavras edificantes para transformar a sua rotina com Deus.
+                  </p>
+                </div>
+              </div>
+
+              <a
+                id="btn-instagram-home-follow"
+                href={adminConfig.instagramUrl || 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-pink-600 via-rose-600 to-amber-600 hover:from-pink-500 hover:to-amber-500 text-white font-bold text-xs shadow-lg shadow-pink-900/30 transition transform active:scale-95 shrink-0"
+              >
+                <Instagram className="w-4 h-4" />
+                <span>Seguir no Instagram</span>
+                <ExternalLink className="w-3.5 h-3.5 text-white/80" />
+              </a>
             </section>
           </div>
         )}
@@ -215,11 +257,24 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-stone-200 bg-white py-6 text-center text-xs text-stone-500">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span>
-            &copy; {new Date().getFullYear()} <strong>Palavra &amp; Paz</strong> &bull; Devocional Diário Cristão
-          </span>
+      <footer className="mt-auto border-t border-stone-200 bg-white py-6 text-xs text-stone-500">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left">
+            <span>
+              &copy; {new Date().getFullYear()} <strong>Palavra &amp; Paz</strong> &bull; Devocional Diário Cristão
+            </span>
+            <a
+              id="footer-btn-instagram"
+              href={adminConfig.instagramUrl || 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-stone-700 hover:text-pink-600 font-medium transition bg-stone-100 hover:bg-pink-50 px-2.5 py-1 rounded-lg border border-stone-200 hover:border-pink-200"
+              title="Siga no Instagram @verdadeiraluzcaminho"
+            >
+              <Instagram className="w-3.5 h-3.5 text-pink-600" />
+              <span>Siga @verdadeiraluzcaminho</span>
+            </a>
+          </div>
           <div className="flex items-center flex-wrap justify-center gap-4">
             <button
               onClick={() => setIsCheckoutOpen(true)}

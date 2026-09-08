@@ -11,7 +11,9 @@ export const DEFAULT_ADMIN_CONFIG: AppAdminConfig = {
   kiwifyCheckoutUrl: 'https://pay.kiwify.com.br/vxSeONK',
   subscriptionPrice: '14,90',
   announcementBanner: 'Bem-vindo(a) ao Palavra & Paz! Um novo devocional diário é preparado a cada amanhecer.',
-  announcementActive: false
+  announcementActive: false,
+  instagramUrl: 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm',
+  instagramHandle: '@verdadeiraluzcaminho'
 };
 
 export class StorageService {
@@ -23,6 +25,12 @@ export class StorageService {
         // Garante que o link do Kiwify seja o oficial atualizado
         if (!parsed.kiwifyCheckoutUrl || parsed.kiwifyCheckoutUrl.includes('assinatura-devocional-palavra-paz')) {
           parsed.kiwifyCheckoutUrl = DEFAULT_ADMIN_CONFIG.kiwifyCheckoutUrl;
+        }
+        if (!parsed.instagramUrl) {
+          parsed.instagramUrl = DEFAULT_ADMIN_CONFIG.instagramUrl;
+        }
+        if (!parsed.instagramHandle) {
+          parsed.instagramHandle = DEFAULT_ADMIN_CONFIG.instagramHandle;
         }
         return { ...DEFAULT_ADMIN_CONFIG, ...parsed };
       }

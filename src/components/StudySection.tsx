@@ -88,7 +88,7 @@ export const StudySection: React.FC<StudySectionProps> = ({
           <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-amber-100/60 border border-amber-200 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
             <div className="text-amber-900">
               <strong className="block text-amber-950 font-bold mb-0.5">
-                Exclusivo para Assinantes Kiwify (R$ 14,90/mês):
+                Exclusivo para Assinantes Kiwify Pro (R$ 14,90/mês):
               </strong>
               <span>
                 Todos os materiais de estudo avançados possuem narração em áudio inclusa e modo de leitura offline para membros assinantes.
@@ -127,11 +127,12 @@ export const StudySection: React.FC<StudySectionProps> = ({
                   {isLocked ? (
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-900 bg-amber-200 px-2 py-0.5 rounded-full border border-amber-300">
                       <Lock className="w-2.5 h-2.5 text-amber-800" />
-                      <span>Kiwify Premium</span>
+                      <span>Kiwify Pro</span>
                     </span>
                   ) : (
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                      Liberado
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                      <Sparkles className="w-2.5 h-2.5 text-emerald-600" />
+                      <span>Pro Liberado</span>
                     </span>
                   )}
                 </div>

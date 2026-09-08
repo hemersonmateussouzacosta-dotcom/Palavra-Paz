@@ -96,6 +96,8 @@ export interface AppAdminConfig {
   subscriptionPrice: string;
   announcementBanner: string;
   announcementActive: boolean;
+  instagramUrl?: string;
+  instagramHandle?: string;
 }
 
 export type ContentViewType =

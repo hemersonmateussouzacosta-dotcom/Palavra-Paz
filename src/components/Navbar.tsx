@@ -12,7 +12,8 @@ import {
   Award,
   Flame,
   ShieldAlert,
-  BookMarked
+  BookMarked,
+  Instagram
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { soundService } from '../services/soundService';
@@ -24,6 +25,7 @@ interface NavbarProps {
   onOpenCheckout: () => void;
   onOpenAdmin: () => void;
   isAdmin?: boolean;
+  instagramUrl?: string;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -32,7 +34,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   profile,
   onOpenCheckout,
   onOpenAdmin,
-  isAdmin = false
+  isAdmin = false,
+  instagramUrl = 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm'
 }) => {
   const [ambientSound, setAmbientSound] = useState<'none' | 'chuva' | 'celestial' | 'aguas'>('none');
   const [soundMenuOpen, setSoundMenuOpen] = useState(false);
@@ -104,6 +107,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <Headphones className="w-3.5 h-3.5" />
                 <span>Meditação Guiada</span>
+                {!isPremium && (
+                  <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1 rounded font-bold border border-amber-500/30">
+                    Pro
+                  </span>
+                )}
               </button>
 
               <button
@@ -148,6 +156,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <BookMarked className="w-3.5 h-3.5 text-amber-400" />
                 <span>Estudos Bíblicos</span>
+                {!isPremium && (
+                  <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1 rounded font-bold border border-amber-500/30">
+                    Pro
+                  </span>
+                )}
               </button>
 
               <button
@@ -227,6 +240,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </div>
 
+              {/* Instagram Official Community Link */}
+              <a
+                id="btn-instagram-nav"
+                href={instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-xl text-xs font-medium transition flex items-center gap-1.5 bg-gradient-to-r from-pink-600/20 via-purple-600/20 to-amber-600/20 border border-pink-500/40 text-pink-200 hover:text-white hover:border-pink-300"
+                title="Siga @verdadeiraluzcaminho no Instagram"
+              >
+                <Instagram className="w-4 h-4 text-pink-400 shrink-0" />
+                <span className="hidden xl:inline text-[11px] font-bold">Instagram</span>
+              </a>
+
               {/* Admin Panel Quick Access */}
               <button
                 id="btn-admin-nav"
@@ -289,12 +315,15 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         <button
           onClick={() => setActiveTab('meditacao')}
-          className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded text-[10px] font-medium transition ${
+          className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded text-[10px] font-medium relative transition ${
             activeTab === 'meditacao' ? 'text-amber-400 font-bold' : 'text-stone-400 hover:text-stone-200'
           }`}
         >
           <Headphones className="w-4 h-4" />
           <span>Meditação</span>
+          {!isPremium && (
+            <span className="absolute top-0.5 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full" />
+          )}
         </button>
 
         <button
@@ -306,7 +335,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <Heart className="w-4 h-4" />
           <span>Salmos</span>
           {!isPremium && (
-            <span className="absolute 0 top-0.5 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full" />
+            <span className="absolute top-0.5 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full" />
           )}
         </button>
 
@@ -322,12 +351,15 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         <button
           onClick={() => setActiveTab('estudos')}
-          className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded text-[10px] font-medium transition ${
+          className={`flex flex-col items-center gap-0.5 py-1 px-2 rounded text-[10px] font-medium relative transition ${
             activeTab === 'estudos' ? 'text-amber-400 font-bold' : 'text-stone-400 hover:text-stone-200'
           }`}
         >
           <BookMarked className="w-4 h-4" />
           <span>Estudos</span>
+          {!isPremium && (
+            <span className="absolute top-0.5 right-1 w-1.5 h-1.5 bg-amber-500 rounded-full" />
+          )}
         </button>
 
         <button

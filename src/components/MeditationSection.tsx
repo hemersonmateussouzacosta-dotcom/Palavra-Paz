@@ -152,14 +152,38 @@ export const MeditationSection: React.FC<MeditationSectionProps> = ({
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
+            <div className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded-full mb-1">
+              <Sparkles className="w-3 h-3 text-amber-700" />
+              <span>Conteúdo Exclusivo Kiwify Pro</span>
+            </div>
             <h2 className="font-serif text-xl sm:text-2xl font-bold text-stone-900">
               Meditação Bíblica Guiada
             </h2>
             <p className="text-xs sm:text-sm text-stone-600">
-              Aquiete a sua respiração e ancore o coração nas promessas divinas de paz e descanso.
+              Aquiete a sua respiração e ancore o coração nas promessas divinas de paz e descanso com condução por áudio e sons celestiais.
             </p>
           </div>
         </div>
+
+        {!isPremium && (
+          <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-amber-100/60 border border-amber-200 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <div className="text-amber-900">
+              <strong className="block text-amber-950 font-bold mb-0.5">
+                Exclusivo para Assinantes Kiwify Pro (R$ 14,90/mês):
+              </strong>
+              <span>
+                Todas as meditações guiadas contam com ciclos de respiração conscientes, paisagens sonoras celestiais relaxantes e condução serena por áudio.
+              </span>
+            </div>
+            <button
+              onClick={onOpenCheckout}
+              className="bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold py-2 px-4 rounded-xl shadow shrink-0 flex items-center gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Assinar por R$ 14,90</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {completedNotification && (
@@ -285,13 +309,14 @@ export const MeditationSection: React.FC<MeditationSectionProps> = ({
                   </span>
 
                   {isLocked ? (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-900 bg-amber-200 px-2 py-0.5 rounded-full">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-900 bg-amber-200 px-2.5 py-0.5 rounded-full border border-amber-300">
                       <Lock className="w-3 h-3 text-amber-700" />
-                      <span>Kiwify Premium</span>
+                      <span>Kiwify Pro</span>
                     </span>
                   ) : (
-                    <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                      Gratuito
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                      <Sparkles className="w-3 h-3 text-emerald-600" />
+                      <span>Pro Liberado</span>
                     </span>
                   )}
                 </div>
@@ -320,7 +345,7 @@ export const MeditationSection: React.FC<MeditationSectionProps> = ({
                   {isLocked ? (
                     <>
                       <Lock className="w-3.5 h-3.5" />
-                      <span>Desbloquear</span>
+                      <span>Desbloquear com Pro</span>
                     </>
                   ) : (
                     <>

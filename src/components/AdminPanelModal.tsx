@@ -30,7 +30,8 @@ import {
   Sun,
   Volume2,
   BookMarked,
-  CheckCircle2
+  CheckCircle2,
+  Instagram
 } from 'lucide-react';
 import { AppAdminConfig, DailyVerse, UserProfile, ContentViewLog, ContentViewType } from '../types';
 import { StorageService } from '../services/storageService';
@@ -562,6 +563,57 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                     <p className="text-[10px] text-stone-500 mt-1">
                       Quando ativado, esse comunicado aparece no topo para todos os visitantes do aplicativo.
                     </p>
+                  </div>
+                </div>
+
+                {/* Instagram Community Configuration */}
+                <div className="bg-white border border-stone-200 rounded-2xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-serif font-bold text-stone-900 text-sm flex items-center gap-1.5">
+                      <Instagram className="w-4 h-4 text-pink-600" />
+                      <span>Comunidade &amp; Instagram Oficial</span>
+                    </h4>
+                    <a
+                      href={adminConfig.instagramUrl || 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-pink-600 hover:text-pink-800 font-semibold flex items-center gap-1 hover:underline"
+                    >
+                      <span>Abrir perfil</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    <div>
+                      <label className="block font-semibold text-stone-700 text-xs mb-1">
+                        Link Completo do Instagram para Seguir:
+                      </label>
+                      <input
+                        type="url"
+                        value={adminConfig.instagramUrl || ''}
+                        onChange={(e) =>
+                          setAdminConfig({ ...adminConfig, instagramUrl: e.target.value })
+                        }
+                        placeholder="https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm"
+                        className="w-full px-3 py-2 text-xs border border-stone-300 rounded-xl bg-white font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold text-stone-700 text-xs mb-1">
+                        Nome de Usuário (@handle):
+                      </label>
+                      <input
+                        type="text"
+                        value={adminConfig.instagramHandle || ''}
+                        onChange={(e) =>
+                          setAdminConfig({ ...adminConfig, instagramHandle: e.target.value })
+                        }
+                        placeholder="@verdadeiraluzcaminho"
+                        className="w-full px-3 py-2 text-xs border border-stone-300 rounded-xl bg-white font-mono"
+                      />
+                    </div>
                   </div>
                 </div>
 

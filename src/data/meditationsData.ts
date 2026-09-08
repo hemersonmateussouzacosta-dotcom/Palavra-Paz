@@ -7,7 +7,7 @@ export const GUIDED_MEDITATIONS: GuidedMeditation[] = [
     durationMinutes: 5,
     theme: 'Paz Interior & Desaceleração',
     description: 'Uma pausa consciente baseada no Salmo 46:10 para liberar a sobrecarga mental e ancorar a alma no amor divino.',
-    isPremium: false, // Gratuito para degustação
+    isPremium: true,
     stages: [
       {
         title: 'Preparação e Postura Sagrada',
