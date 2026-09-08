@@ -90,6 +90,17 @@ export const MeditationSection: React.FC<MeditationSectionProps> = ({
   }, [isPlaying, activeMeditation, currentStageIndex, narrationActive]);
 
   const handleStartMeditation = (med: GuidedMeditation) => {
+    StorageService.recordView({
+      type: 'meditacao',
+      title: med.title,
+      subtitle: `${med.durationMinutes} min • ${med.theme}`,
+      category: med.theme,
+      metadata: {
+        isPremiumContent: med.isPremium,
+        durationSeconds: med.durationMinutes * 60
+      }
+    });
+
     if (med.isPremium && !isPremium) {
       onOpenCheckout();
       return;

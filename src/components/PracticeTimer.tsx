@@ -96,6 +96,16 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ profile, onLogSave
       notes: notes.trim() || 'Prática concluída com paz e gratidão.'
     });
 
+    StorageService.recordView({
+      type: 'cronometro',
+      title: titlesMap[practiceType],
+      subtitle: `${Math.round(durationSec / 60)} min dedicados ao Senhor`,
+      category: 'Cronômetro Devocional',
+      metadata: {
+        durationSeconds: durationSec
+      }
+    });
+
     onLogSaved();
     setSavedSuccessMessage(true);
     setTimeout(() => setSavedSuccessMessage(false), 5000);

@@ -4,6 +4,7 @@ import { Prayer, PrayerCategory, UserProfile } from '../types';
 import { PRAYERS_DATA } from '../data/prayersData';
 import { audioSpeechService } from '../services/audioSpeechService';
 import { soundService } from '../services/soundService';
+import { StorageService } from '../services/storageService';
 import { SimulatedAdBanner } from './SimulatedAdBanner';
 
 interface PrayersSectionProps {
@@ -39,6 +40,17 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
   });
 
   const handleOpenPrayer = (prayer: Prayer) => {
+    // Record view in admin history
+    StorageService.recordView({
+      type: 'oracao',
+      title: prayer.title,
+      subtitle: prayer.biblicalRef,
+      category: prayer.category,
+      metadata: {
+        isPremiumContent: prayer.isPremium
+      }
+    });
+
     // If locked for the user
     const isLocked = !isPremium && prayer.isPremium;
     if (isLocked) {
@@ -59,6 +71,12 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
     } else {
       setIsSpeaking(true);
       soundService.playChime(528, 2);
+      StorageService.recordView({
+        type: 'audio',
+        title: `Áudio: ${activePrayer.title}`,
+        subtitle: `Narração de voz (${activePrayer.durationMinutes} min)`,
+        category: activePrayer.category
+      });
       audioSpeechService.speak(`${activePrayer.title}. ${activePrayer.text}`, () => {
         setIsSpeaking(false);
       });

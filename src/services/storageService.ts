@@ -1,9 +1,10 @@
-import { PracticeLog, UserProfile, AppAdminConfig } from '../types';
+import { PracticeLog, UserProfile, AppAdminConfig, ContentViewLog, ContentViewType } from '../types';
 
 const PROFILE_STORAGE_KEY = 'palavra_paz_user_profile';
 const LOGS_STORAGE_KEY = 'palavra_paz_practice_logs';
 const ADMIN_CONFIG_STORAGE_KEY = 'palavra_paz_admin_config';
 const ADMIN_SESSION_KEY = 'palavra_paz_admin_logged_in';
+const VIEW_HISTORY_STORAGE_KEY = 'palavra_paz_view_history';
 
 export const DEFAULT_ADMIN_CONFIG: AppAdminConfig = {
   adminPin: '1234',
@@ -224,5 +225,171 @@ export class StorageService {
     }
     this.saveProfile(profile);
     return isSaved;
+  }
+
+  /* =========================================================
+   * HISTÓRICO DE VISUALIZAÇÕES (ÁREA DE ADM)
+   * ========================================================= */
+
+  public static getViewHistory(): ContentViewLog[] {
+    try {
+      const stored = localStorage.getItem(VIEW_HISTORY_STORAGE_KEY);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.warn('Erro ao ler histórico de visualização:', e);
+    }
+
+    // Registros iniciais para demonstração realista no painel de administração
+    const now = new Date();
+    const m5 = new Date(now.getTime() - 5 * 60 * 1000);
+    const m25 = new Date(now.getTime() - 25 * 60 * 1000);
+    const h2 = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+    const h4 = new Date(now.getTime() - 4 * 60 * 60 * 1000);
+    const yest = new Date(now.getTime() - 22 * 60 * 60 * 1000);
+    const yest2 = new Date(now.getTime() - 26 * 60 * 60 * 1000);
+
+    const initialHistory: ContentViewLog[] = [
+      {
+        id: 'view-' + now.getTime(),
+        type: 'versiculo',
+        title: 'Versículo do Dia: Salmos 23:1',
+        subtitle: 'O Senhor é o meu pastor; nada me faltará',
+        category: 'Paz Interior & Fé',
+        timestamp: m5.toISOString(),
+        userStatus: 'free',
+        metadata: {
+          isPremiumContent: false,
+          audioListened: false
+        }
+      },
+      {
+        id: 'view-' + (now.getTime() - 1),
+        type: 'salmo',
+        title: 'Salmo 91',
+        subtitle: 'Aquele que habita no esconderijo do Altíssimo',
+        category: 'Proteção & Livramento',
+        timestamp: m25.toISOString(),
+        userStatus: 'premium',
+        metadata: {
+          isPremiumContent: true,
+          audioListened: true
+        }
+      },
+      {
+        id: 'view-' + (now.getTime() - 2),
+        type: 'oracao',
+        title: 'Oração da Manhã & Consagração',
+        subtitle: 'Salmos 143:8 - Faze-me ouvir a tua benignidade pela manhã',
+        category: 'manha',
+        timestamp: h2.toISOString(),
+        userStatus: 'free',
+        metadata: {
+          isPremiumContent: false,
+          audioListened: true
+        }
+      },
+      {
+        id: 'view-' + (now.getTime() - 3),
+        type: 'meditacao',
+        title: 'Silenciando a Mente & Ansiedade',
+        subtitle: 'Duração: 5 minutos • Respiração guiada',
+        category: 'Paz Interior & Confiança',
+        timestamp: h4.toISOString(),
+        userStatus: 'free',
+        metadata: {
+          isPremiumContent: false,
+          durationSeconds: 300
+        }
+      },
+      {
+        id: 'view-' + (now.getTime() - 4),
+        type: 'salmo',
+        title: 'Salmo 121',
+        subtitle: 'Elevo os olhos para os montes: de onde me virá o socorro?',
+        category: 'Auxílio & Socorro',
+        timestamp: yest.toISOString(),
+        userStatus: 'premium',
+        metadata: {
+          isPremiumContent: true,
+          audioListened: true
+        }
+      },
+      {
+        id: 'view-' + (now.getTime() - 5),
+        type: 'estudo',
+        title: 'O Poder Transformador da Oração em Segredo',
+        subtitle: 'Como falar com o Pai sem pressa e receber paz que excede o entendimento',
+        category: 'Vida de Oração',
+        timestamp: yest2.toISOString(),
+        userStatus: 'premium',
+        metadata: {
+          isPremiumContent: true
+        }
+      }
+    ];
+
+    this.saveViewHistory(initialHistory);
+    return initialHistory;
+  }
+
+  public static saveViewHistory(history: ContentViewLog[]): void {
+    try {
+      localStorage.setItem(VIEW_HISTORY_STORAGE_KEY, JSON.stringify(history));
+    } catch (e) {
+      console.warn('Erro ao salvar histórico de visualização:', e);
+    }
+  }
+
+  public static recordView(entry: {
+    type: ContentViewType;
+    title: string;
+    subtitle?: string;
+    category?: string;
+    metadata?: ContentViewLog['metadata'];
+  }): ContentViewLog | null {
+    try {
+      const history = this.getViewHistory();
+      const profile = this.getProfile();
+      const userStatus: 'free' | 'premium' = profile.subscriptionStatus === 'premium' ? 'premium' : 'free';
+
+      // Evitar duplicações idênticas registradas em menos de 10 segundos
+      if (history.length > 0) {
+        const last = history[0];
+        const isSame = last.type === entry.type && last.title === entry.title;
+        const diffMs = Date.now() - new Date(last.timestamp).getTime();
+        if (isSame && diffMs < 10000) {
+          return null;
+        }
+      }
+
+      const newLog: ContentViewLog = {
+        id: 'view-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+        type: entry.type,
+        title: entry.title,
+        subtitle: entry.subtitle,
+        category: entry.category,
+        timestamp: new Date().toISOString(),
+        userStatus,
+        metadata: entry.metadata
+      };
+
+      // Manter no máximo os 200 registros mais recentes
+      const updatedHistory = [newLog, ...history].slice(0, 200);
+      this.saveViewHistory(updatedHistory);
+      return newLog;
+    } catch (e) {
+      console.warn('Erro ao registrar visualização:', e);
+      return null;
+    }
+  }
+
+  public static clearViewHistory(): void {
+    try {
+      localStorage.setItem(VIEW_HISTORY_STORAGE_KEY, JSON.stringify([]));
+    } catch (e) {
+      console.warn('Erro ao limpar histórico:', e);
+    }
   }
 }

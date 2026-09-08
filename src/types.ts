@@ -98,3 +98,28 @@ export interface AppAdminConfig {
   announcementActive: boolean;
 }
 
+export type ContentViewType =
+  | 'versiculo'
+  | 'oracao'
+  | 'salmo'
+  | 'meditacao'
+  | 'estudo'
+  | 'cronometro'
+  | 'audio';
+
+export interface ContentViewLog {
+  id: string;
+  type: ContentViewType;
+  title: string;
+  subtitle?: string;
+  category?: string;
+  timestamp: string; // ISO string
+  userStatus: 'free' | 'premium';
+  metadata?: {
+    isPremiumContent?: boolean;
+    durationSeconds?: number;
+    audioListened?: boolean;
+    dateReference?: string;
+  };
+}
+

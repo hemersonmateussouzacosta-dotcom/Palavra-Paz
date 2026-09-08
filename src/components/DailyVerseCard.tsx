@@ -3,6 +3,7 @@ import { Volume2, VolumeX, Share2, Bell, Heart, Sparkles, Check, Bookmark, Calen
 import { DailyVerse } from '../types';
 import { audioSpeechService } from '../services/audioSpeechService';
 import { soundService } from '../services/soundService';
+import { StorageService } from '../services/storageService';
 
 interface DailyVerseCardProps {
   verse: DailyVerse;
@@ -54,6 +55,21 @@ export const DailyVerseCard: React.FC<DailyVerseCardProps> = ({
 
 
   useEffect(() => {
+    if (verse) {
+      StorageService.recordView({
+        type: 'versiculo',
+        title: `Versículo: ${verse.reference}`,
+        subtitle: verse.text.length > 70 ? verse.text.substring(0, 70) + '...' : verse.text,
+        category: verse.theme,
+        metadata: {
+          isPremiumContent: false,
+          dateReference: verse.date
+        }
+      });
+    }
+  }, [verse?.id, verse?.date, verse?.reference]);
+
+  useEffect(() => {
     audioSpeechService.setStatusCallback((speaking) => {
       setIsSpeaking(speaking);
     });
@@ -67,6 +83,12 @@ export const DailyVerseCard: React.FC<DailyVerseCardProps> = ({
       audioSpeechService.stop();
     } else {
       soundService.playChime(528, 2);
+      StorageService.recordView({
+        type: 'audio',
+        title: `Áudio: ${verse.reference}`,
+        subtitle: 'Narração falada do devocional diário',
+        category: verse.theme
+      });
       const textToRead = `Versículo do Dia. ${verse.reference}. ${verse.text}. Reflexão devocional: ${verse.reflection}. Prática para hoje: ${verse.actionPrompt}`;
       audioSpeechService.speak(textToRead);
     }

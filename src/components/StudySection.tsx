@@ -4,6 +4,7 @@ import { StudyMaterial, UserProfile } from '../types';
 import { STUDY_MATERIALS } from '../data/studyData';
 import { audioSpeechService } from '../services/audioSpeechService';
 import { soundService } from '../services/soundService';
+import { StorageService } from '../services/storageService';
 
 interface StudySectionProps {
   profile: UserProfile;
@@ -23,6 +24,16 @@ export const StudySection: React.FC<StudySectionProps> = ({
   const isPremium = profile.subscriptionStatus === 'premium';
 
   const handleOpenStudy = (study: StudyMaterial) => {
+    StorageService.recordView({
+      type: 'estudo',
+      title: study.title,
+      subtitle: study.subtitle,
+      category: study.category,
+      metadata: {
+        isPremiumContent: study.isPremium
+      }
+    });
+
     if (!isPremium) {
       setLockedStudy(study);
       soundService.playChime(440, 1.2);
@@ -40,6 +51,12 @@ export const StudySection: React.FC<StudySectionProps> = ({
     } else {
       setIsSpeaking(true);
       soundService.playChime(528, 2);
+      StorageService.recordView({
+        type: 'audio',
+        title: `Áudio: ${activeStudy.title}`,
+        subtitle: `Narração do estudo bíblico (${activeStudy.estimatedReadMinutes} min)`,
+        category: activeStudy.category
+      });
       const textToSpeak = `${activeStudy.title}. ${activeStudy.subtitle}. ${activeStudy.content.join(' ')}`;
       audioSpeechService.speak(textToSpeak, () => setIsSpeaking(false));
     }

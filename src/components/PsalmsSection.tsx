@@ -4,6 +4,7 @@ import { Psalm, UserProfile } from '../types';
 import { CURATED_PSALMS, getAll150PsalmsDirectory } from '../data/psalmsData';
 import { audioSpeechService } from '../services/audioSpeechService';
 import { soundService } from '../services/soundService';
+import { StorageService } from '../services/storageService';
 
 interface PsalmsSectionProps {
   profile: UserProfile;
@@ -44,6 +45,17 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
   });
 
   const handleOpenPsalm = (num: number, title: string, theme: string) => {
+    // Record view in admin history
+    StorageService.recordView({
+      type: 'salmo',
+      title: `Salmo ${num}`,
+      subtitle: title,
+      category: theme,
+      metadata: {
+        isPremiumContent: true
+      }
+    });
+
     // All 150 Psalms are strictly premium content for paying subscribers
     if (!isPremium) {
       setLockedPsalmPreview({ number: num, title, theme });
@@ -84,6 +96,12 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
     } else {
       setIsSpeaking(true);
       soundService.playChime(528, 2);
+      StorageService.recordView({
+        type: 'audio',
+        title: `Áudio: ${activePsalm.title}`,
+        subtitle: `Narração completa do salmo`,
+        category: activePsalm.theme
+      });
       const fullText = `${activePsalm.title}. ${activePsalm.verses.map((v) => `Versículo ${v.verseNumber}: ${v.text}`).join(' ')}. Reflexão devocional: ${activePsalm.devotionalInsight}`;
       audioSpeechService.speak(fullText, () => setIsSpeaking(false));
     }
