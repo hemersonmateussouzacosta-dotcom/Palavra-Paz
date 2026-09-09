@@ -15,6 +15,7 @@ import { KiwifyCheckoutModal } from './components/KiwifyCheckoutModal';
 import { MorningNotificationModal } from './components/MorningNotificationModal';
 import { OfflineLockedModal } from './components/OfflineLockedModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
+import { AdBanner } from './components/AdBanner';
 import { useTheme } from './hooks/useTheme';
 import { soundService } from './services/soundService';
 import { Bell, ShieldAlert, Sparkles, X, Instagram, ExternalLink, Sun, Moon, MessageCircle } from 'lucide-react';
@@ -166,6 +167,14 @@ export default function App() {
               />
             </section>
 
+            {/* Discreet Sponsored Ad Banner (Free Users) */}
+            <AdBanner
+              isPremium={profile.subscriptionStatus === 'premium'}
+              adsEnabled={adminConfig.adsEnabled !== false}
+              onOpenCheckout={() => setIsCheckoutOpen(true)}
+              variant="horizontal"
+            />
+
             {/* Instagram Official Community Banner */}
             <section
               id="instagram-community-banner"
@@ -220,12 +229,18 @@ export default function App() {
         )}
 
         {activeTab === 'salmos' && (
-          <div className="animate-fadeIn">
+          <div className="animate-fadeIn space-y-6">
             <PsalmsSection
               profile={profile}
               onOpenCheckout={() => setIsCheckoutOpen(true)}
               onToggleFavorite={handleToggleFavorite}
               onToggleOffline={handleToggleOffline}
+            />
+            <AdBanner
+              isPremium={profile.subscriptionStatus === 'premium'}
+              adsEnabled={adminConfig.adsEnabled !== false}
+              onOpenCheckout={() => setIsCheckoutOpen(true)}
+              variant="card"
             />
           </div>
         )}
@@ -256,7 +271,6 @@ export default function App() {
               practiceLogs={practiceLogs}
               onProfileUpdate={(updated) => setProfile(updated)}
               onOpenCheckout={() => setIsCheckoutOpen(true)}
-              onOpenAdmin={() => setIsAdminModalOpen(true)}
             />
           </div>
         )}

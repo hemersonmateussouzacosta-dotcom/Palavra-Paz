@@ -8,15 +8,13 @@ interface ProgressDashboardProps {
   practiceLogs: PracticeLog[];
   onProfileUpdate: (updated: UserProfile) => void;
   onOpenCheckout: () => void;
-  onOpenAdmin?: () => void;
 }
 
 export const ProgressDashboard: React.FC<ProgressDashboardProps> = ({
   profile,
   practiceLogs,
   onProfileUpdate,
-  onOpenCheckout,
-  onOpenAdmin
+  onOpenCheckout
 }) => {
   const [isEditingName, setIsEditingName] = useState(false);
   const [userName, setUserName] = useState(profile.name);
@@ -340,32 +338,6 @@ export const ProgressDashboard: React.FC<ProgressDashboardProps> = ({
           ))}
         </div>
       </div>
-
-      {/* Admin Access Panel Entry */}
-      {onOpenAdmin && (
-        <div className="bg-stone-50 rounded-2xl p-4 sm:p-5 border border-stone-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-700">
-              <Shield className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="font-bold text-stone-900 block text-sm font-serif">
-                Painel do Administrador &bull; Controle Total
-              </span>
-              <span className="text-stone-500">
-                Gerencie o link Kiwify, os 365 devocionais diários e parâmetros da plataforma.
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={onOpenAdmin}
-            className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-amber-300 font-bold rounded-xl transition shadow-sm text-xs shrink-0 flex items-center gap-1.5"
-          >
-            <span>Acessar Painel ADM</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
     </div>
   );
 };

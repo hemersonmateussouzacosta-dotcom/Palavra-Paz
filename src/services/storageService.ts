@@ -8,14 +8,20 @@ const VIEW_HISTORY_STORAGE_KEY = 'palavra_paz_view_history';
 const THEME_STORAGE_KEY = 'palavra_paz_theme_mode';
 
 export const DEFAULT_ADMIN_CONFIG: AppAdminConfig = {
+  adminUser: 'admin',
   adminPin: '9876',
   kiwifyCheckoutUrl: 'https://pay.kiwify.com.br/vxSeONK',
   subscriptionPrice: '14,90',
+  adFreeCheckoutUrl: 'https://pay.kiwify.com.br/vxSeONK',
+  adFreePrice: '4,90',
+  adsenseClientId: '',
+  adsenseSlotId: '',
   announcementBanner: 'Bem-vindo(a) ao Palavra & Paz! Um novo devocional diário é preparado a cada amanhecer.',
   announcementActive: false,
   instagramUrl: 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm',
   instagramHandle: '@verdadeiraluzcaminho',
-  supportWhatsAppUrl: 'https://wa.link/18u8sf'
+  supportWhatsAppUrl: 'https://wa.link/18u8sf',
+  adsEnabled: true
 };
 
 export class StorageService {
@@ -28,6 +34,18 @@ export class StorageService {
         if (!parsed.kiwifyCheckoutUrl || parsed.kiwifyCheckoutUrl.includes('assinatura-devocional-palavra-paz')) {
           parsed.kiwifyCheckoutUrl = DEFAULT_ADMIN_CONFIG.kiwifyCheckoutUrl;
         }
+        if (!parsed.adFreeCheckoutUrl) {
+          parsed.adFreeCheckoutUrl = DEFAULT_ADMIN_CONFIG.adFreeCheckoutUrl;
+        }
+        if (!parsed.adFreePrice) {
+          parsed.adFreePrice = DEFAULT_ADMIN_CONFIG.adFreePrice;
+        }
+        if (parsed.adsenseClientId === undefined) {
+          parsed.adsenseClientId = DEFAULT_ADMIN_CONFIG.adsenseClientId;
+        }
+        if (parsed.adsenseSlotId === undefined) {
+          parsed.adsenseSlotId = DEFAULT_ADMIN_CONFIG.adsenseSlotId;
+        }
         if (!parsed.instagramUrl) {
           parsed.instagramUrl = DEFAULT_ADMIN_CONFIG.instagramUrl;
         }
@@ -36,6 +54,12 @@ export class StorageService {
         }
         if (!parsed.supportWhatsAppUrl) {
           parsed.supportWhatsAppUrl = DEFAULT_ADMIN_CONFIG.supportWhatsAppUrl;
+        }
+        if (!parsed.adminUser) {
+          parsed.adminUser = DEFAULT_ADMIN_CONFIG.adminUser;
+        }
+        if (parsed.adsEnabled === undefined) {
+          parsed.adsEnabled = DEFAULT_ADMIN_CONFIG.adsEnabled;
         }
         // Atualiza PIN antigo para a senha definida pelo administrador
         if (!parsed.adminPin || parsed.adminPin === '1234' || parsed.adminPin === '1478') {
@@ -82,8 +106,8 @@ export class StorageService {
       const stored = localStorage.getItem(PROFILE_STORAGE_KEY);
       if (stored) {
         const parsed: UserProfile = JSON.parse(stored);
-        // Sem teste grátis ou bloqueio por expiração de dias: ou é premium ou é free
-        if (parsed.subscriptionStatus !== 'premium') {
+        // Sem teste grátis ou bloqueio por expiração de dias: premium, ad_free ou free
+        if (parsed.subscriptionStatus !== 'premium' && parsed.subscriptionStatus !== 'ad_free') {
           parsed.subscriptionStatus = 'free';
         }
         return parsed;
@@ -117,6 +141,18 @@ export class StorageService {
     } catch (e) {
       console.warn('Storage write error:', e);
     }
+  }
+
+  public static activateAdFree(kiwifyId: string = 'KWFY-ADFREE-' + Math.floor(100000 + Math.random() * 900000)): UserProfile {
+    const profile = this.getProfile();
+    const expiry = new Date();
+    expiry.setMonth(expiry.getMonth() + 1); // 30 dias recorrente
+
+    profile.subscriptionStatus = 'ad_free';
+    profile.kiwifyTransactionId = kiwifyId;
+    profile.subscriptionExpiryDate = expiry.toISOString();
+    this.saveProfile(profile);
+    return profile;
   }
 
   public static activatePremium(kiwifyId: string = 'KWFY-' + Math.floor(100000 + Math.random() * 900000)): UserProfile {

@@ -1,4 +1,4 @@
-export type SubscriptionStatus = 'free' | 'premium' | 'trial' | 'expired';
+export type SubscriptionStatus = 'free' | 'ad_free' | 'premium' | 'trial' | 'expired';
 
 export interface UserProfile {
   name: string;
@@ -91,14 +91,20 @@ export interface NotificationSettings {
 }
 
 export interface AppAdminConfig {
+  adminUser?: string;
   adminPin: string;
   kiwifyCheckoutUrl: string;
   subscriptionPrice: string;
+  adFreeCheckoutUrl?: string;
+  adFreePrice?: string;
+  adsenseClientId?: string;
+  adsenseSlotId?: string;
   announcementBanner: string;
   announcementActive: boolean;
   instagramUrl?: string;
   instagramHandle?: string;
   supportWhatsAppUrl?: string;
+  adsEnabled?: boolean;
 }
 
 export type ContentViewType =
@@ -117,7 +123,7 @@ export interface ContentViewLog {
   subtitle?: string;
   category?: string;
   timestamp: string; // ISO string
-  userStatus: 'free' | 'premium';
+  userStatus: 'free' | 'ad_free' | 'premium';
   metadata?: {
     isPremiumContent?: boolean;
     durationSeconds?: number;

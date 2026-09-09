@@ -33,11 +33,12 @@ import {
   BookMarked,
   CheckCircle2,
   Instagram,
-  MessageCircle
+  MessageCircle,
+  Megaphone
 } from 'lucide-react';
 import { AppAdminConfig, DailyVerse, UserProfile, ContentViewLog, ContentViewType } from '../types';
 import { StorageService } from '../services/storageService';
-import { saveKiwifyCheckoutUrl } from '../config/paymentConfig';
+import { saveKiwifyCheckoutUrl, saveAdFreeCheckoutUrl } from '../config/paymentConfig';
 import {
   getAllAvailableVerses,
   saveCustomVerse,
@@ -63,8 +64,9 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 }) => {
   const [adminConfig, setAdminConfig] = useState<AppAdminConfig>(StorageService.getAdminConfig());
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(StorageService.isAdminLoggedIn());
+  const [loginInput, setLoginInput] = useState('');
   const [pinInput, setPinInput] = useState('');
-  const [pinError, setPinError] = useState(false);
+  const [loginError, setLoginError] = useState(false);
   const [activeTab, setActiveTab] = useState<'config' | 'historico' | 'devocionais' | 'usuarios'>('config');
   const [showAdminPinConfig, setShowAdminPinConfig] = useState(false);
 
@@ -95,15 +97,23 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   const handleLogin = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    const targetUser = (adminConfig.adminUser || 'admin').trim().toLowerCase();
+    const inputUser = loginInput.trim().toLowerCase();
     const targetPin = (adminConfig.adminPin || '9876').trim();
-    if (pinInput.trim() === targetPin) {
+
+    // Valid if user matches 'admin', configured user, or the account email
+    const isUserValid = inputUser === targetUser || inputUser === 'admin' || inputUser === 'hemersonmateussouzacosta@gmail.com';
+    const isPasswordValid = pinInput.trim() === targetPin;
+
+    if (isUserValid && isPasswordValid) {
       setIsAuthenticated(true);
       StorageService.setAdminLoggedIn(true);
-      setPinError(false);
+      setLoginError(false);
       setPinInput('');
+      setLoginInput('');
       soundService.playChime(528, 1);
     } else {
-      setPinError(true);
+      setLoginError(true);
       soundService.playChime(300, 0.5);
     }
   };
@@ -111,11 +121,17 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const handleLogout = () => {
     setIsAuthenticated(false);
     StorageService.setAdminLoggedIn(false);
+    setLoginInput('');
+    setPinInput('');
+    setLoginError(false);
   };
 
   const handleSaveConfig = () => {
     StorageService.saveAdminConfig(adminConfig);
     saveKiwifyCheckoutUrl(adminConfig.kiwifyCheckoutUrl);
+    if (adminConfig.adFreeCheckoutUrl) {
+      saveAdFreeCheckoutUrl(adminConfig.adFreeCheckoutUrl);
+    }
     setSaveSuccess('Configurações salvas com sucesso!');
     soundService.playChime(528, 1.2);
     setTimeout(() => setSaveSuccess(null), 3000);
@@ -150,9 +166,12 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     }
   };
 
-  const handleSimulateUserStatus = (status: 'free' | 'premium') => {
+  const handleSimulateUserStatus = (status: 'free' | 'ad_free' | 'premium') => {
     if (status === 'premium') {
       const updated = StorageService.activatePremium('KWFY-ADMIN-TEST');
+      onProfileUpdate(updated);
+    } else if (status === 'ad_free') {
+      const updated = StorageService.activateAdFree('KWFY-ADFREE-ADMIN-TEST');
       onProfileUpdate(updated);
     } else {
       const updated = StorageService.cancelOrResetSubscription();
@@ -316,45 +335,67 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           </div>
         </div>
 
-        {/* PIN Screen if not authenticated */}
+        {/* Login Screen if not authenticated */}
         {!isAuthenticated ? (
-          <div className="py-8 px-4 text-center max-w-sm mx-auto space-y-4">
-            <div className="w-14 h-14 bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700/60 rounded-full flex items-center justify-center mx-auto text-amber-800 dark:text-amber-300">
-              <KeyRound className="w-7 h-7" />
+          <div className="py-7 px-3 sm:px-4 text-center max-w-sm mx-auto space-y-4">
+            <div className="w-13 h-13 bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700/60 rounded-2xl flex items-center justify-center mx-auto text-amber-800 dark:text-amber-300">
+              <KeyRound className="w-6 h-6" />
             </div>
 
             <div>
-              <h3 className="font-serif font-bold text-lg text-stone-900 dark:text-stone-100">
+              <h3 className="font-serif font-bold text-lg sm:text-xl text-stone-900 dark:text-stone-100">
                 Acesso Restrito ao Administrador
               </h3>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                Digite o PIN de segurança para gerenciar o painel administrativo.
+                Informe seu usuário e senha cadastrados para acessar o painel de gestão.
               </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-3">
-              <input
-                type="password"
-                maxLength={8}
-                value={pinInput}
-                onChange={(e) => {
-                  setPinInput(e.target.value);
-                  setPinError(false);
-                }}
-                placeholder="••••"
-                className="w-full text-center tracking-widest text-2xl font-mono px-4 py-2.5 border border-stone-300 dark:border-stone-700 rounded-xl bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                autoFocus
-              />
+            <form onSubmit={handleLogin} className="space-y-3 text-left">
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">
+                  Usuário ou E-mail:
+                </label>
+                <input
+                  id="admin-login-user"
+                  type="text"
+                  value={loginInput}
+                  onChange={(e) => {
+                    setLoginInput(e.target.value);
+                    setLoginError(false);
+                  }}
+                  placeholder="admin"
+                  className="w-full px-3.5 py-2 text-xs sm:text-sm border border-stone-300 dark:border-stone-700 rounded-xl bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  autoFocus
+                />
+              </div>
 
-              {pinError && (
-                <p className="text-xs text-rose-600 dark:text-rose-400 font-semibold">
-                  PIN incorreto! Por favor, tente novamente.
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">
+                  Senha de Acesso:
+                </label>
+                <input
+                  id="admin-login-pass"
+                  type="password"
+                  value={pinInput}
+                  onChange={(e) => {
+                    setPinInput(e.target.value);
+                    setLoginError(false);
+                  }}
+                  placeholder="••••••••"
+                  className="w-full px-3.5 py-2 text-xs sm:text-sm border border-stone-300 dark:border-stone-700 rounded-xl bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono tracking-wider"
+                />
+              </div>
+
+              {loginError && (
+                <p className="text-xs text-rose-600 dark:text-rose-400 font-semibold text-center pt-1">
+                  Usuário ou senha incorretos! Por favor, tente novamente.
                 </p>
               )}
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-sm transition shadow flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-2.5 bg-amber-600 hover:bg-amber-700 active:scale-98 text-white font-bold rounded-xl text-xs sm:text-sm transition shadow flex items-center justify-center gap-2 cursor-pointer mt-2"
               >
                 <Unlock className="w-4 h-4" />
                 <span>Entrar no Painel</span>
@@ -497,7 +538,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <label className="block text-xs font-semibold text-stone-700 mb-1">
                         Preço Exibido (R$):
@@ -514,9 +555,24 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                     </div>
 
                     <div>
+                      <label className="block text-xs font-semibold text-stone-700 mb-1">
+                        Usuário ADM:
+                      </label>
+                      <input
+                        type="text"
+                        value={adminConfig.adminUser || 'admin'}
+                        onChange={(e) =>
+                          setAdminConfig({ ...adminConfig, adminUser: e.target.value })
+                        }
+                        className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono"
+                        placeholder="admin"
+                      />
+                    </div>
+
+                    <div>
                       <div className="flex items-center justify-between mb-1">
                         <label className="block text-xs font-semibold text-stone-700">
-                          PIN de Acesso Admin:
+                          Senha / PIN ADM:
                         </label>
                         <button
                           type="button"
@@ -524,7 +580,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                           className="text-[11px] text-amber-700 hover:text-amber-900 flex items-center gap-1 font-medium"
                         >
                           {showAdminPinConfig ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                          <span>{showAdminPinConfig ? 'Ocultar' : 'Ver PIN'}</span>
+                          <span>{showAdminPinConfig ? 'Ocultar' : 'Ver'}</span>
                         </button>
                       </div>
                       <input
@@ -536,6 +592,122 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                         className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono tracking-wider"
                         placeholder="••••"
                       />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ads & Monetization Configuration (Plano Ad-Free & Google AdSense) */}
+                <div className="bg-white border border-stone-200 rounded-2xl p-4 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-serif font-bold text-stone-900 text-sm flex items-center gap-1.5">
+                      <Megaphone className="w-4 h-4 text-amber-600" />
+                      <span>Anúncios, Plano Ad-Free &amp; Google AdSense</span>
+                    </h4>
+                    <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold">
+                      <input
+                        type="checkbox"
+                        checked={adminConfig.adsEnabled !== false}
+                        onChange={(e) =>
+                          setAdminConfig({ ...adminConfig, adsEnabled: e.target.checked })
+                        }
+                        className="rounded text-amber-600 focus:ring-amber-500"
+                      />
+                      <span>{adminConfig.adsEnabled !== false ? 'Anúncios Ativos' : 'Anúncios Desativados'}</span>
+                    </label>
+                  </div>
+                  <p className="text-[11px] text-stone-500 leading-relaxed">
+                    Exibe anúncios discretos e não-invasivos no aplicativo para usuários no plano gratuito. Quem adquire o <strong>Plano Sem Anúncios (Ad-Free)</strong> ou o <strong>Plano Kiwify Premium</strong> navega 100% livre de propagandas.
+                  </p>
+
+                  {/* Sub-section: Plano Sem Anúncios (Ad-Free) */}
+                  <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-xl space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                        <span>Configuração do Plano Sem Anúncios (Ad-Free)</span>
+                      </span>
+                      <span className="text-[10px] bg-amber-200/80 text-amber-950 font-semibold px-2 py-0.5 rounded">
+                        Kiwify
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                          Link Checkout Kiwify (Plano Ad-Free):
+                        </label>
+                        <input
+                          type="url"
+                          value={adminConfig.adFreeCheckoutUrl || ''}
+                          onChange={(e) =>
+                            setAdminConfig({ ...adminConfig, adFreeCheckoutUrl: e.target.value })
+                          }
+                          className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono"
+                          placeholder="https://pay.kiwify.com.br/vxSeONK"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                          Preço Ad-Free (R$):
+                        </label>
+                        <input
+                          type="text"
+                          value={adminConfig.adFreePrice || '4,90'}
+                          onChange={(e) =>
+                            setAdminConfig({ ...adminConfig, adFreePrice: e.target.value })
+                          }
+                          className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white"
+                          placeholder="4,90"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Sub-section: Google AdSense */}
+                  <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
+                        <Megaphone className="w-3.5 h-3.5 text-stone-600" />
+                        <span>Integração Google AdSense (Opcional)</span>
+                      </span>
+                      <span className="text-[10px] bg-stone-200 text-stone-700 font-semibold px-2 py-0.5 rounded">
+                        AdSense
+                      </span>
+                    </div>
+
+                    <p className="text-[10px] text-stone-500">
+                      Caso possua conta aprovada no Google AdSense, insira o seu ID de editor e o bloco de anúncios. Se deixado em branco, o sistema exibe os anúncios editoriais/patrocinados cristãos discretos.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                          Google AdSense Client ID:
+                        </label>
+                        <input
+                          type="text"
+                          value={adminConfig.adsenseClientId || ''}
+                          onChange={(e) =>
+                            setAdminConfig({ ...adminConfig, adsenseClientId: e.target.value })
+                          }
+                          className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono"
+                          placeholder="ca-pub-1234567890123456"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                          Bloco / Slot ID do Anúncio:
+                        </label>
+                        <input
+                          type="text"
+                          value={adminConfig.adsenseSlotId || ''}
+                          onChange={(e) =>
+                            setAdminConfig({ ...adminConfig, adsenseSlotId: e.target.value })
+                          }
+                          className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono"
+                          placeholder="1234567890"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1254,17 +1426,29 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                     Use os botões abaixo para ver exatamente como o aplicativo se comporta na visão de cada tipo de usuário:
                   </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                     <button
                       onClick={() => handleSimulateUserStatus('free')}
                       className={`p-3.5 rounded-xl border text-xs font-semibold text-center transition ${
-                        profile.subscriptionStatus !== 'premium'
+                        profile.subscriptionStatus === 'free'
                           ? 'bg-amber-100 border-amber-400 text-amber-900 font-bold shadow-sm'
                           : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'
                       }`}
                     >
                       <div className="font-bold text-sm">Plano Gratuito</div>
-                      <div className="text-[11px] text-stone-500 mt-0.5">Versículo diário, orações básicas e anúncios</div>
+                      <div className="text-[11px] text-stone-500 mt-0.5">Versículo diário, orações básicas e com anúncios</div>
+                    </button>
+
+                    <button
+                      onClick={() => handleSimulateUserStatus('ad_free')}
+                      className={`p-3.5 rounded-xl border text-xs font-semibold text-center transition ${
+                        profile.subscriptionStatus === 'ad_free'
+                          ? 'bg-teal-100 border-teal-400 text-teal-900 font-bold shadow-sm'
+                          : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'
+                      }`}
+                    >
+                      <div className="font-bold text-sm text-teal-800">🛡️ Plano Sem Anúncios (Ad-Free)</div>
+                      <div className="text-[11px] text-stone-500 mt-0.5">100% sem anúncios e banners, devocional focado</div>
                     </button>
 
                     <button
@@ -1275,7 +1459,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                           : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'
                       }`}
                     >
-                      <div className="font-bold text-sm text-emerald-700">👑 Assinante Kiwify Premium</div>
+                      <div className="font-bold text-sm text-emerald-700">👑 Kiwify Premium Completo</div>
                       <div className="text-[11px] text-stone-500 mt-0.5">Todos os 150 Salmos, sem anúncios e áudios</div>
                     </button>
                   </div>

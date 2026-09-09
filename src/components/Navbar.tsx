@@ -283,16 +283,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="hidden xl:inline text-[11px] font-bold">Instagram</span>
               </a>
 
-              {/* Admin Panel Quick Access */}
-              <button
-                id="btn-admin-nav"
-                onClick={onOpenAdmin}
-                className="p-2 rounded-xl text-xs font-medium transition flex items-center gap-1 bg-stone-800 text-stone-300 border border-stone-700 hover:text-amber-300 hover:border-amber-500/50"
-                title="Acesso de Administrador (ADM)"
-              >
-                <ShieldAlert className="w-4 h-4 text-amber-400" />
-                <span className="hidden xl:inline text-[11px] font-bold">ADM</span>
-              </button>
+              {/* Admin Panel Quick Access - Somente visível para administrador autenticado */}
+              {isAdmin && (
+                <button
+                  id="btn-admin-nav"
+                  onClick={onOpenAdmin}
+                  className="p-2 rounded-xl text-xs font-medium transition flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30"
+                  title="Painel de Controle do Administrador (Conectado)"
+                >
+                  <ShieldAlert className="w-4 h-4 text-amber-400" />
+                  <span className="text-[11px] font-bold">ADM</span>
+                </button>
+              )}
 
               {/* Subscription CTA Pill */}
               {isPremium ? (
