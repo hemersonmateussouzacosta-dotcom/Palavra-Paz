@@ -13,10 +13,12 @@ import {
   Flame,
   ShieldAlert,
   BookMarked,
-  Instagram
+  Instagram,
+  Smartphone
 } from 'lucide-react';
-import { UserProfile } from '../types';
+import { UserProfile, ThemeMode } from '../types';
 import { soundService } from '../services/soundService';
+import { ThemeSelector } from './ThemeSelector';
 
 interface NavbarProps {
   activeTab: 'inicio' | 'meditacao' | 'salmos' | 'cronometro' | 'estudos' | 'progresso';
@@ -24,8 +26,12 @@ interface NavbarProps {
   profile: UserProfile;
   onOpenCheckout: () => void;
   onOpenAdmin: () => void;
+  onOpenAndroidInstall?: () => void;
   isAdmin?: boolean;
   instagramUrl?: string;
+  currentTheme?: ThemeMode;
+  isEffectiveDark?: boolean;
+  onThemeChange?: (theme: ThemeMode) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -34,8 +40,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   profile,
   onOpenCheckout,
   onOpenAdmin,
+  onOpenAndroidInstall,
   isAdmin = false,
-  instagramUrl = 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm'
+  instagramUrl = 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm',
+  currentTheme = 'auto',
+  isEffectiveDark = false,
+  onThemeChange = () => {}
 }) => {
   const [ambientSound, setAmbientSound] = useState<'none' | 'chuva' | 'celestial' | 'aguas'>('none');
   const [soundMenuOpen, setSoundMenuOpen] = useState(false);
@@ -183,8 +193,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </nav>
 
-            {/* Right Header Actions: Sound Ambience, Admin, Kiwify Status */}
-            <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            {/* Right Header Actions: Theme Selector, Sound Ambience, Admin, Kiwify Status */}
+            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+              {/* Theme Selector (Claro / Escuro / Auto Noturno) */}
+              <ThemeSelector
+                currentTheme={currentTheme}
+                isEffectiveDark={isEffectiveDark}
+                onThemeChange={onThemeChange}
+              />
+
               {/* Ambient Sound Dropdown */}
               <div className="relative">
                 <button
@@ -239,6 +256,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                 )}
               </div>
+
+              {/* Android App Install Button */}
+              {onOpenAndroidInstall && (
+                <button
+                  id="btn-android-nav"
+                  onClick={onOpenAndroidInstall}
+                  className="p-2 rounded-xl text-xs font-medium transition flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 hover:text-white hover:border-emerald-300 hover:bg-emerald-900/60"
+                  title="Transformar em App Android (Instalar no Celular)"
+                >
+                  <Smartphone className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span className="hidden xl:inline text-[11px] font-bold">App Android</span>
+                </button>
+              )}
 
               {/* Instagram Official Community Link */}
               <a

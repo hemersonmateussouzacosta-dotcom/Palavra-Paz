@@ -125,3 +125,5 @@ export interface ContentViewLog {
   };
 }
 
+export type ThemeMode = 'light' | 'dark' | 'auto';
+

@@ -19,6 +19,7 @@ import {
   RefreshCw,
   Clock,
   Eye,
+  EyeOff,
   History,
   BarChart3,
   Filter,
@@ -31,7 +32,8 @@ import {
   Volume2,
   BookMarked,
   CheckCircle2,
-  Instagram
+  Instagram,
+  Smartphone
 } from 'lucide-react';
 import { AppAdminConfig, DailyVerse, UserProfile, ContentViewLog, ContentViewType } from '../types';
 import { StorageService } from '../services/storageService';
@@ -64,6 +66,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const [pinInput, setPinInput] = useState('');
   const [pinError, setPinError] = useState(false);
   const [activeTab, setActiveTab] = useState<'config' | 'historico' | 'devocionais' | 'usuarios'>('config');
+  const [showAdminPinConfig, setShowAdminPinConfig] = useState(false);
 
   // Viewing History state
   const [viewHistory, setViewHistory] = useState<ContentViewLog[]>(() => StorageService.getViewHistory());
@@ -92,7 +95,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   const handleLogin = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (pinInput.trim() === adminConfig.adminPin || pinInput.trim() === '1234') {
+    const targetPin = (adminConfig.adminPin || '1478').trim();
+    if (pinInput.trim() === targetPin) {
       setIsAuthenticated(true);
       StorageService.setAdminLoggedIn(true);
       setPinError(false);
@@ -284,29 +288,29 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/80 backdrop-blur-md overflow-y-auto animate-fadeIn">
-      <div className="bg-stone-50 border border-stone-300 rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl relative text-stone-800 my-auto">
+      <div className="bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-800 rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl relative text-stone-800 dark:text-stone-200 my-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-2 rounded-full hover:bg-stone-200 transition"
+          className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 p-2 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 transition"
           aria-label="Fechar painel de administração"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
-        <div className="flex items-center gap-3 mb-5 border-b border-stone-200 pb-4">
-          <div className="w-11 h-11 rounded-2xl bg-amber-500/20 text-amber-700 border border-amber-500/30 flex items-center justify-center font-bold">
+        <div className="flex items-center gap-3 mb-5 border-b border-stone-200 dark:border-stone-800 pb-4">
+          <div className="w-11 h-11 rounded-2xl bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold">
             <ShieldAlert className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 flex items-center gap-2">
+            <h2 className="text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
               <span>Painel do Administrador</span>
-              <span className="text-xs font-mono bg-stone-800 text-amber-300 px-2 py-0.5 rounded font-semibold">
+              <span className="text-xs font-mono bg-stone-800 dark:bg-stone-700 text-amber-300 px-2 py-0.5 rounded font-semibold">
                 ADM
               </span>
             </h2>
-            <p className="text-xs text-stone-500">
+            <p className="text-xs text-stone-500 dark:text-stone-400">
               Controle de links, 365 devocionais diários e parâmetros do aplicativo
             </p>
           </div>
@@ -315,16 +319,16 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         {/* PIN Screen if not authenticated */}
         {!isAuthenticated ? (
           <div className="py-8 px-4 text-center max-w-sm mx-auto space-y-4">
-            <div className="w-14 h-14 bg-amber-100 border border-amber-300 rounded-full flex items-center justify-center mx-auto text-amber-800">
+            <div className="w-14 h-14 bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700/60 rounded-full flex items-center justify-center mx-auto text-amber-800 dark:text-amber-300">
               <KeyRound className="w-7 h-7" />
             </div>
 
             <div>
-              <h3 className="font-serif font-bold text-lg text-stone-900">
+              <h3 className="font-serif font-bold text-lg text-stone-900 dark:text-stone-100">
                 Acesso Restrito ao Administrador
               </h3>
-              <p className="text-xs text-stone-500 mt-1">
-                Digite o PIN de segurança para gerenciar o app (PIN padrão: <strong className="font-mono text-stone-800">1234</strong>)
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                Digite o PIN de segurança para gerenciar o painel administrativo.
               </p>
             </div>
 
@@ -337,14 +341,14 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                   setPinInput(e.target.value);
                   setPinError(false);
                 }}
-                placeholder="Digite o PIN (1234)"
-                className="w-full text-center tracking-widest text-lg font-mono px-4 py-2.5 border border-stone-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                placeholder="••••"
+                className="w-full text-center tracking-widest text-2xl font-mono px-4 py-2.5 border border-stone-300 dark:border-stone-700 rounded-xl bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 autoFocus
               />
 
               {pinError && (
-                <p className="text-xs text-rose-600 font-semibold">
-                  PIN incorreto! Tente &ldquo;1234&rdquo;.
+                <p className="text-xs text-rose-600 dark:text-rose-400 font-semibold">
+                  PIN incorreto! Por favor, tente novamente.
                 </p>
               )}
 
@@ -356,47 +360,31 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 <span>Entrar no Painel</span>
               </button>
             </form>
-
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setPinInput('1234');
-                  setTimeout(() => {
-                    setIsAuthenticated(true);
-                    StorageService.setAdminLoggedIn(true);
-                  }, 150);
-                }}
-                className="text-[11px] text-stone-400 hover:text-stone-700 underline"
-              >
-                Entrar com PIN Padrão (1234)
-              </button>
-            </div>
           </div>
         ) : (
           /* Authenticated Admin Dashboard */
           <div className="space-y-5">
             {/* Success Toast */}
             {saveSuccess && (
-              <div className="p-3 bg-emerald-100 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-semibold flex items-center justify-between animate-fadeIn">
+              <div className="p-3 bg-emerald-100 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 rounded-xl text-xs font-semibold flex items-center justify-between animate-fadeIn">
                 <span className="flex items-center gap-1.5">
-                  <Check className="w-4 h-4 text-emerald-700" />
+                  <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                   {saveSuccess}
                 </span>
-                <button onClick={() => setSaveSuccess(null)} className="text-emerald-700">
+                <button onClick={() => setSaveSuccess(null)} className="text-emerald-700 dark:text-emerald-400">
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
             )}
 
             {/* Navigation Tabs */}
-            <div className="flex border-b border-stone-200 gap-2">
+            <div className="flex border-b border-stone-200 dark:border-stone-800 gap-2">
               <button
                 onClick={() => setActiveTab('config')}
                 className={`pb-2 px-3 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
                   activeTab === 'config'
-                    ? 'border-amber-600 text-amber-900'
-                    : 'border-transparent text-stone-500 hover:text-stone-800'
+                    ? 'border-amber-600 text-amber-900 dark:text-amber-300'
+                    : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
                 }`}
               >
                 <DollarSign className="w-3.5 h-3.5" />
@@ -410,13 +398,13 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 }}
                 className={`pb-2 px-3 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
                   activeTab === 'historico'
-                    ? 'border-amber-600 text-amber-900'
-                    : 'border-transparent text-stone-500 hover:text-stone-800'
+                    ? 'border-amber-600 text-amber-900 dark:text-amber-300'
+                    : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
                 }`}
               >
-                <Eye className="w-3.5 h-3.5 text-amber-600" />
+                <Eye className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                 <span>Histórico de Visualização</span>
-                <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-1.5 py-0.5 rounded-full border border-amber-300">
+                <span className="text-[10px] bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 font-bold px-1.5 py-0.5 rounded-full border border-amber-300 dark:border-amber-700/60">
                   {viewHistory.length}
                 </span>
               </button>
@@ -425,8 +413,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 onClick={() => setActiveTab('devocionais')}
                 className={`pb-2 px-3 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
                   activeTab === 'devocionais'
-                    ? 'border-amber-600 text-amber-900'
-                    : 'border-transparent text-stone-500 hover:text-stone-800'
+                    ? 'border-amber-600 text-amber-900 dark:text-amber-300'
+                    : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
                 }`}
               >
                 <Calendar className="w-3.5 h-3.5" />
@@ -437,8 +425,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 onClick={() => setActiveTab('usuarios')}
                 className={`pb-2 px-3 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
                   activeTab === 'usuarios'
-                    ? 'border-amber-600 text-amber-900'
-                    : 'border-transparent text-stone-500 hover:text-stone-800'
+                    ? 'border-amber-600 text-amber-900 dark:text-amber-300'
+                    : 'border-transparent text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
                 }`}
               >
                 <Users className="w-3.5 h-3.5" />
@@ -514,17 +502,27 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-stone-700 mb-1">
-                        PIN de Acesso Admin:
-                      </label>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-xs font-semibold text-stone-700">
+                          PIN de Acesso Admin:
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => setShowAdminPinConfig(!showAdminPinConfig)}
+                          className="text-[11px] text-amber-700 hover:text-amber-900 flex items-center gap-1 font-medium"
+                        >
+                          {showAdminPinConfig ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                          <span>{showAdminPinConfig ? 'Ocultar' : 'Ver PIN'}</span>
+                        </button>
+                      </div>
                       <input
-                        type="text"
+                        type={showAdminPinConfig ? 'text' : 'password'}
                         value={adminConfig.adminPin}
                         onChange={(e) =>
                           setAdminConfig({ ...adminConfig, adminPin: e.target.value })
                         }
-                        className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono"
-                        placeholder="1234"
+                        className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono tracking-wider"
+                        placeholder="••••"
                       />
                     </div>
                   </div>
@@ -614,6 +612,33 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                         className="w-full px-3 py-2 text-xs border border-stone-300 rounded-xl bg-white font-mono"
                       />
                     </div>
+                  </div>
+                </div>
+
+                {/* Android & PWA Application Setup Status */}
+                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/80 rounded-2xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-serif font-bold text-stone-900 text-sm flex items-center gap-1.5">
+                      <Smartphone className="w-4 h-4 text-emerald-600" />
+                      <span>Aplicativo Android &amp; PWA (Status &amp; Publicação)</span>
+                    </h4>
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+                      Pronto para Android
+                    </span>
+                  </div>
+                  <p className="text-xs text-stone-600 leading-relaxed">
+                    O aplicativo está 100% configurado com <strong>Web App Manifest</strong>, ícones de 192px/512px, modo <em>standalone</em> (sem barras de navegador) e <strong>Service Worker</strong> para cache offline. Usuários de Android podem instalar diretamente no celular ou você pode gerar o arquivo <strong>.APK</strong> para a Google Play Store.
+                  </p>
+                  <div className="flex items-center gap-2 pt-1">
+                    <a
+                      href="https://www.pwabuilder.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs rounded-xl flex items-center gap-1.5 transition"
+                    >
+                      <span>Gerar APK com PWABuilder</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
                   </div>
                 </div>
 

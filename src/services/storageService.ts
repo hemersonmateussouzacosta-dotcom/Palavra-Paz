@@ -1,13 +1,14 @@
-import { PracticeLog, UserProfile, AppAdminConfig, ContentViewLog, ContentViewType } from '../types';
+import { PracticeLog, UserProfile, AppAdminConfig, ContentViewLog, ContentViewType, ThemeMode } from '../types';
 
 const PROFILE_STORAGE_KEY = 'palavra_paz_user_profile';
 const LOGS_STORAGE_KEY = 'palavra_paz_practice_logs';
 const ADMIN_CONFIG_STORAGE_KEY = 'palavra_paz_admin_config';
 const ADMIN_SESSION_KEY = 'palavra_paz_admin_logged_in';
 const VIEW_HISTORY_STORAGE_KEY = 'palavra_paz_view_history';
+const THEME_STORAGE_KEY = 'palavra_paz_theme_mode';
 
 export const DEFAULT_ADMIN_CONFIG: AppAdminConfig = {
-  adminPin: '1234',
+  adminPin: '1478',
   kiwifyCheckoutUrl: 'https://pay.kiwify.com.br/vxSeONK',
   subscriptionPrice: '14,90',
   announcementBanner: 'Bem-vindo(a) ao Palavra & Paz! Um novo devocional diário é preparado a cada amanhecer.',
@@ -31,6 +32,10 @@ export class StorageService {
         }
         if (!parsed.instagramHandle) {
           parsed.instagramHandle = DEFAULT_ADMIN_CONFIG.instagramHandle;
+        }
+        // Atualiza PIN antigo para o novo PIN 1478 solicitado pelo usuário
+        if (!parsed.adminPin || parsed.adminPin === '1234') {
+          parsed.adminPin = '1478';
         }
         return { ...DEFAULT_ADMIN_CONFIG, ...parsed };
       }
@@ -399,5 +404,42 @@ export class StorageService {
     } catch (e) {
       console.warn('Erro ao limpar histórico:', e);
     }
+  }
+
+  public static getThemePreference(): ThemeMode {
+    try {
+      const stored = localStorage.getItem(THEME_STORAGE_KEY);
+      if (stored === 'light' || stored === 'dark' || stored === 'auto') {
+        return stored as ThemeMode;
+      }
+    } catch (e) {
+      console.warn('Erro ao ler tema:', e);
+    }
+    return 'auto';
+  }
+
+  public static setThemePreference(theme: ThemeMode): void {
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch (e) {
+      console.warn('Erro ao salvar tema:', e);
+    }
+  }
+
+  public static isNightTime(): boolean {
+    const hour = new Date().getHours();
+    // Leitura noturna automática: das 18:00 às 06:00
+    return hour >= 18 || hour < 6;
+  }
+
+  public static resolveIsDark(theme: ThemeMode): boolean {
+    if (theme === 'dark') return true;
+    if (theme === 'light') return false;
+    // Modo automático: verifica se é período da noite ou preferência do sistema
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark) return true;
+    }
+    return this.isNightTime();
   }
 }

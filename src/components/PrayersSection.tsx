@@ -142,7 +142,7 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
           className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition ${
             selectedFilter === 'todas'
               ? 'bg-amber-600 text-white shadow-sm'
-              : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-100'
+              : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800'
           }`}
         >
           Todas as Orações
@@ -153,7 +153,7 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
           className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
             selectedFilter === 'gratuitas'
               ? 'bg-emerald-600 text-white shadow-sm'
-              : 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
+              : 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40'
           }`}
         >
           <Check className="w-3 h-3" />
@@ -165,7 +165,7 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
           className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
             selectedFilter === 'manha'
               ? 'bg-amber-600 text-white shadow-sm'
-              : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-100'
+              : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800'
           }`}
         >
           <Sun className="w-3.5 h-3.5 text-amber-500" />
@@ -177,7 +177,7 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
           className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
             selectedFilter === 'acalmar_alma'
               ? 'bg-amber-600 text-white shadow-sm'
-              : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-100'
+              : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800'
           }`}
         >
           <Wind className="w-3.5 h-3.5 text-emerald-500" />
@@ -189,10 +189,10 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
           className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
             selectedFilter === 'tarde_noite'
               ? 'bg-amber-600 text-white shadow-sm'
-              : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-100'
+              : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800'
           }`}
         >
-          <Moon className="w-3.5 h-3.5 text-indigo-500" />
+          <Moon className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
           <span>Tarde & Noite</span>
         </button>
       </div>
@@ -209,8 +209,8 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
               onClick={() => handleOpenPrayer(prayer)}
               className={`group relative rounded-2xl p-5 border transition cursor-pointer flex flex-col justify-between ${
                 isLocked
-                  ? 'bg-stone-100/90 border-stone-300 text-stone-700 hover:border-amber-400 hover:shadow-sm'
-                  : 'bg-white border-amber-100/90 text-stone-800 hover:shadow-md hover:border-amber-300'
+                  ? 'bg-stone-100/90 dark:bg-stone-900/80 border-stone-300 dark:border-stone-800 text-stone-700 dark:text-stone-300 hover:border-amber-400 hover:shadow-sm'
+                  : 'bg-white dark:bg-stone-900 border-amber-100/90 dark:border-stone-800 text-stone-800 dark:text-stone-200 hover:shadow-md hover:border-amber-300 dark:hover:border-amber-500/50'
               }`}
             >
               <div>
@@ -219,10 +219,10 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
                   <span
                     className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${
                       prayer.category === 'manha'
-                        ? 'bg-amber-100 text-amber-900'
+                        ? 'bg-amber-100 dark:bg-amber-950/50 text-amber-900 dark:text-amber-200'
                         : prayer.category === 'acalmar_alma'
-                        ? 'bg-emerald-100 text-emerald-900'
-                        : 'bg-indigo-100 text-indigo-900'
+                        ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-200'
+                        : 'bg-indigo-100 dark:bg-indigo-950/50 text-indigo-900 dark:text-indigo-200'
                     }`}
                   >
                     {prayer.category === 'manha'
@@ -233,39 +233,39 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
                   </span>
 
                   {isLocked ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-950 bg-amber-200 px-2 py-0.5 rounded-full border border-amber-300 shadow-xs">
-                      <Lock className="w-3 h-3 text-amber-800" />
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-950 dark:text-amber-200 bg-amber-200 dark:bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-300 dark:border-amber-700/60 shadow-xs">
+                      <Lock className="w-3 h-3 text-amber-800 dark:text-amber-400" />
                       <span>Bloqueado no Grátis</span>
                     </span>
                   ) : (
-                    <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
                       {isFreeOption && !isPremium ? 'Gratuito (Com Anúncios)' : 'Liberado'}
                     </span>
                   )}
                 </div>
 
                 {/* Title and summary */}
-                <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900 mb-1.5 group-hover:text-amber-700 transition">
+                <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900 dark:text-stone-100 mb-1.5 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition">
                   {prayer.title}
                 </h3>
-                <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed mb-3">
+                <p className="text-xs text-stone-600 dark:text-stone-400 line-clamp-2 leading-relaxed mb-3">
                   {prayer.summary}
                 </p>
               </div>
 
               {/* Footer row */}
-              <div className="pt-3 border-t border-stone-200/60 flex items-center justify-between text-xs text-stone-500">
-                <span className="text-[11px] font-medium text-amber-800">
+              <div className="pt-3 border-t border-stone-200/60 dark:border-stone-800 flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
+                <span className="text-[11px] font-medium text-amber-800 dark:text-amber-400">
                   {prayer.biblicalRef}
                 </span>
 
                 <div className="flex items-center gap-1.5">
                   {isLocked ? (
-                    <span className="text-amber-900 font-bold flex items-center gap-1 text-xs">
+                    <span className="text-amber-900 dark:text-amber-300 font-bold flex items-center gap-1 text-xs">
                       Desbloquear <ArrowRight className="w-3 h-3" />
                     </span>
                   ) : (
-                    <span className="text-stone-700 font-semibold group-hover:text-amber-700 flex items-center gap-1 text-xs">
+                    <span className="text-stone-700 dark:text-stone-300 font-semibold group-hover:text-amber-700 dark:group-hover:text-amber-400 flex items-center gap-1 text-xs">
                       Orar agora &rarr;
                     </span>
                   )}
@@ -279,49 +279,49 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
       {/* Locked Prayer Upgrade Teaser Modal */}
       {lockedPrayerPreview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/75 backdrop-blur-md overflow-y-auto animate-fadeIn">
-          <div className="bg-stone-50 border border-amber-300 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative text-stone-800 text-center my-auto">
+          <div className="bg-stone-50 dark:bg-stone-900 border border-amber-300 dark:border-amber-700/60 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative text-stone-800 dark:text-stone-200 text-center my-auto">
             <button
               onClick={() => setLockedPrayerPreview(null)}
-              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1.5 rounded-full hover:bg-stone-200 transition"
+              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 p-1.5 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 transition"
               aria-label="Fechar"
             >
               ✕
             </button>
 
-            <div className="w-14 h-14 rounded-2xl bg-amber-100 border border-amber-300 text-amber-800 flex items-center justify-center mx-auto mb-3">
+            <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700/60 text-amber-800 dark:text-amber-300 flex items-center justify-center mx-auto mb-3">
               <Lock className="w-7 h-7" />
             </div>
 
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 bg-amber-200 px-3 py-1 rounded-full inline-block mb-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200 bg-amber-200 dark:bg-amber-950/80 px-3 py-1 rounded-full inline-block mb-2">
               Conteúdo Exclusivo Kiwify Premium
             </span>
 
-            <h3 className="font-serif text-xl font-bold text-stone-950 mb-1.5">
+            <h3 className="font-serif text-xl font-bold text-stone-950 dark:text-stone-100 mb-1.5">
               {lockedPrayerPreview.title}
             </h3>
 
-            <p className="text-xs text-stone-600 mb-4 leading-relaxed">
+            <p className="text-xs text-stone-600 dark:text-stone-400 mb-4 leading-relaxed">
               Esta oração para {lockedPrayerPreview.category === 'acalmar_alma' ? 'acalmar a ansiedade e trazer paz interior' : 'fortalecimento espiritual'} faz parte do acervo premium de orações sem cortes.
             </p>
 
-            <div className="bg-white border border-stone-200 rounded-xl p-3.5 mb-5 text-left text-xs space-y-1.5">
-              <strong className="text-stone-900 font-bold block mb-1">
+            <div className="bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl p-3.5 mb-5 text-left text-xs space-y-1.5">
+              <strong className="text-stone-900 dark:text-stone-100 font-bold block mb-1">
                 No Plano Kiwify você tem:
               </strong>
-              <div className="flex items-center gap-2 text-stone-700">
-                <span className="text-emerald-600 font-bold">✓</span>
+              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
                 <span>Todas as orações matinais, de cura e noturnas</span>
               </div>
-              <div className="flex items-center gap-2 text-stone-700">
-                <span className="text-emerald-600 font-bold">✓</span>
+              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
                 <span>Todos os 150 Salmos completos narrados</span>
               </div>
-              <div className="flex items-center gap-2 text-stone-700">
-                <span className="text-emerald-600 font-bold">✓</span>
+              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
                 <span>Acesso offline sem necessidade de internet</span>
               </div>
-              <div className="flex items-center gap-2 text-stone-700">
-                <span className="text-emerald-600 font-bold">✓</span>
+              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
                 <span>Sem anúncios recorrentes</span>
               </div>
             </div>
@@ -340,7 +340,7 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
 
               <button
                 onClick={() => setLockedPrayerPreview(null)}
-                className="w-full py-2 text-xs text-stone-500 hover:text-stone-700 transition"
+                className="w-full py-2 text-xs text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition"
               >
                 Continuar nas orações gratuitas
               </button>
@@ -352,10 +352,10 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
       {/* Reader Modal for Open Prayers */}
       {activePrayer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/70 backdrop-blur-sm overflow-y-auto animate-fadeIn">
-          <div className="bg-stone-50 border border-stone-300 rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl relative text-stone-800 my-auto">
+          <div className="bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-800 rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl relative text-stone-800 dark:text-stone-200 my-auto">
             {/* Modal Top Bar */}
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-stone-200">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2.5 py-1 rounded-md">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-stone-200 dark:border-stone-800">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-2.5 py-1 rounded-md">
                 {activePrayer.category === 'manha'
                   ? 'Oração da Manhã'
                   : activePrayer.category === 'acalmar_alma'
@@ -367,7 +367,7 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
                 {/* Font size toggle */}
                 <button
                   onClick={() => setFontSize(fontSize === 'normal' ? 'grande' : 'normal')}
-                  className="px-2 py-1 text-xs font-semibold rounded border border-stone-300 text-stone-600 hover:bg-stone-100"
+                  className="px-2 py-1 text-xs font-semibold rounded border border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800"
                   title="Alterar tamanho da fonte para leitura confortável"
                 >
                   {fontSize === 'normal' ? 'A+' : 'A-'}
@@ -378,8 +378,8 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
                   onClick={() => onToggleOffline(activePrayer.id, activePrayer.title)}
                   className={`p-1.5 rounded-lg border text-xs transition ${
                     profile.savedOfflineIds.includes(activePrayer.id)
-                      ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
-                      : 'border-stone-300 text-stone-500 hover:bg-stone-100'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300'
+                      : 'border-stone-300 dark:border-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
                   }`}
                   title={
                     profile.savedOfflineIds.includes(activePrayer.id)
@@ -395,8 +395,8 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
                   onClick={() => onToggleFavorite(activePrayer.id)}
                   className={`p-1.5 rounded-lg border text-xs transition ${
                     profile.favoriteIds.includes(activePrayer.id)
-                      ? 'bg-rose-50 border-rose-300 text-rose-600'
-                      : 'border-stone-300 text-stone-500 hover:bg-stone-100'
+                      ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400'
+                      : 'border-stone-300 dark:border-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
                   }`}
                   title="Favoritar oração"
                 >
@@ -406,7 +406,7 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
                 {/* Close modal */}
                 <button
                   onClick={handleCloseModal}
-                  className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-200 transition"
+                  className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800 transition"
                   aria-label="Fechar"
                 >
                   ✕
@@ -416,10 +416,10 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
 
             {/* Title & Biblical Ref */}
             <div className="mb-2">
-              <h2 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 mb-1">
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 dark:text-stone-100 mb-1">
                 {activePrayer.title}
               </h2>
-              <p className="text-xs font-semibold text-amber-800">
+              <p className="text-xs font-semibold text-amber-800 dark:text-amber-400">
                 Base Bíblica: {activePrayer.biblicalRef} &bull; Tempo sugerido: {activePrayer.durationMinutes} min
               </p>
             </div>
@@ -431,7 +431,7 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
 
             {/* Prayer Text Content */}
             <div
-              className={`font-serif text-stone-800 leading-relaxed whitespace-pre-line my-4 p-4 sm:p-6 bg-white rounded-2xl border border-stone-200 shadow-inner ${
+              className={`font-serif text-stone-800 dark:text-stone-100 leading-relaxed whitespace-pre-line my-4 p-4 sm:p-6 bg-white dark:bg-stone-950 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-inner dark:shadow-stone-950 ${
                 fontSize === 'grande' ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'
               }`}
             >
@@ -444,14 +444,14 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
             )}
 
             {/* Action buttons */}
-            <div className="flex items-center justify-between flex-wrap gap-2 pt-3 border-t border-stone-200">
+            <div className="flex items-center justify-between flex-wrap gap-2 pt-3 border-t border-stone-200 dark:border-stone-800">
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleToggleNarration}
                   className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition shadow-sm ${
                     isSpeaking
                       ? 'bg-amber-600 text-white animate-pulse'
-                      : 'bg-amber-100 hover:bg-amber-200 text-amber-900'
+                      : 'bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-amber-900 dark:text-amber-200 border border-amber-300/40 dark:border-amber-800/50'
                   }`}
                 >
                   {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -460,17 +460,17 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
 
                 <button
                   onClick={handleShare}
-                  className="p-2 rounded-xl border border-stone-300 text-stone-600 hover:bg-stone-100 text-xs font-medium flex items-center gap-1.5 transition"
+                  className="p-2 rounded-xl border border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 text-xs font-medium flex items-center gap-1.5 transition"
                   title="Copiar texto da oração"
                 >
-                  {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
+                  {copied ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Share2 className="w-4 h-4" />}
                   <span className="hidden sm:inline">Compartilhar</span>
                 </button>
               </div>
 
               <button
                 onClick={handleCloseModal}
-                className="py-2 px-5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-semibold shadow transition"
+                className="py-2 px-5 bg-stone-900 dark:bg-amber-600 hover:bg-stone-800 dark:hover:bg-amber-500 text-white rounded-xl text-xs font-semibold shadow transition"
               >
                 Concluir Oração
               </button>

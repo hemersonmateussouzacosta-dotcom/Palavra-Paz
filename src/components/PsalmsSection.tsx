@@ -185,7 +185,7 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
             placeholder="Buscar por número (ex: 23, 91) ou palavra..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 text-xs bg-white border border-stone-200 rounded-xl text-stone-800 placeholder-stone-400 shadow-sm focus:outline-none focus:border-amber-500"
+            className="w-full pl-9 pr-4 py-2.5 text-xs bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl text-stone-800 dark:text-stone-200 placeholder-stone-400 dark:placeholder-stone-500 shadow-sm focus:outline-none focus:border-amber-500"
           />
         </div>
 
@@ -204,7 +204,7 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
               className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap transition ${
                 selectedTheme === theme.id
                   ? 'bg-amber-600 text-white shadow-sm'
-                  : 'bg-white border border-stone-200 text-stone-600 hover:bg-stone-50'
+                  : 'bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
               }`}
             >
               {theme.label}
@@ -224,41 +224,41 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
               onClick={() => handleOpenPsalm(p.number, p.title, p.theme)}
               className={`p-4 rounded-2xl border transition cursor-pointer flex flex-col justify-between ${
                 isLocked
-                  ? 'bg-stone-100/90 border-stone-200 hover:border-amber-400/80 text-stone-700'
-                  : 'bg-white border-amber-100 hover:border-amber-300 hover:shadow-md text-stone-800'
+                  ? 'bg-stone-100/90 dark:bg-stone-900/80 border-stone-200 dark:border-stone-800 hover:border-amber-400/80 text-stone-700 dark:text-stone-300'
+                  : 'bg-white dark:bg-stone-900 border-amber-100 dark:border-stone-800 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-md text-stone-800 dark:text-stone-200'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="w-8 h-8 rounded-lg bg-amber-100 text-amber-900 font-bold flex items-center justify-center text-xs">
+                  <span className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 font-bold flex items-center justify-center text-xs">
                     #{p.number}
                   </span>
 
                   {isLocked ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-950 bg-amber-200 px-2 py-0.5 rounded-full border border-amber-300">
-                      <Lock className="w-2.5 h-2.5 text-amber-800" />
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-950 dark:text-amber-200 bg-amber-200 dark:bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-300 dark:border-amber-700/60">
+                      <Lock className="w-2.5 h-2.5 text-amber-800 dark:text-amber-400" />
                       <span>Kiwify Premium</span>
                     </span>
                   ) : (
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
                       Liberado
                     </span>
                   )}
                 </div>
 
-                <h4 className="font-serif font-bold text-base text-stone-900 mb-1">
+                <h4 className="font-serif font-bold text-base text-stone-900 dark:text-stone-100 mb-1">
                   Salmo {p.number}
                 </h4>
-                <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed mb-3">
+                <p className="text-xs text-stone-500 dark:text-stone-400 line-clamp-2 leading-relaxed mb-3">
                   {p.title}
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">
-                <span className="truncate max-w-[140px] text-amber-800 font-medium">
+              <div className="pt-2 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400">
+                <span className="truncate max-w-[140px] text-amber-800 dark:text-amber-400 font-medium">
                   {p.theme}
                 </span>
-                <span className="text-stone-700 font-semibold flex items-center gap-0.5">
+                <span className="text-stone-700 dark:text-stone-300 font-semibold flex items-center gap-0.5">
                   {isLocked ? 'Desbloquear &rarr;' : 'Ler &rarr;'}
                 </span>
               </div>
@@ -270,49 +270,49 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
       {/* Locked Psalm Preview Paywall Modal */}
       {lockedPsalmPreview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/75 backdrop-blur-md overflow-y-auto animate-fadeIn">
-          <div className="bg-stone-50 border border-amber-300 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative text-stone-800 text-center my-auto">
+          <div className="bg-stone-50 dark:bg-stone-900 border border-amber-300 dark:border-amber-700/60 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative text-stone-800 dark:text-stone-200 text-center my-auto">
             <button
               onClick={() => setLockedPsalmPreview(null)}
-              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1.5 rounded-full hover:bg-stone-200 transition"
+              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 p-1.5 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 transition"
               aria-label="Fechar"
             >
               ✕
             </button>
 
-            <div className="w-14 h-14 rounded-2xl bg-amber-100 border border-amber-300 text-amber-800 flex items-center justify-center mx-auto mb-3">
+            <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700/60 text-amber-800 dark:text-amber-300 flex items-center justify-center mx-auto mb-3">
               <Lock className="w-7 h-7" />
             </div>
 
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 bg-amber-200 px-3 py-1 rounded-full inline-block mb-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200 bg-amber-200 dark:bg-amber-950/80 px-3 py-1 rounded-full inline-block mb-2">
               Salmos: Conteúdo Exclusivo Kiwify
             </span>
 
-            <h3 className="font-serif text-2xl font-bold text-stone-950 mb-1">
+            <h3 className="font-serif text-2xl font-bold text-stone-950 dark:text-stone-100 mb-1">
               Salmo {lockedPsalmPreview.number} &bull; {lockedPsalmPreview.title}
             </h3>
 
-            <p className="text-xs text-stone-600 mb-4 leading-relaxed">
+            <p className="text-xs text-stone-600 dark:text-stone-400 mb-4 leading-relaxed">
               O leitor completo deste Salmo, reflexão bíblica, narração em áudio serena e modo offline estão disponíveis na assinatura Kiwify por <strong>R$ 14,90/mês</strong>.
             </p>
 
-            <div className="bg-white border border-stone-200 rounded-2xl p-4 mb-5 text-left text-xs space-y-2 shadow-sm">
-              <div className="font-bold text-stone-900 mb-1">
+            <div className="bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-2xl p-4 mb-5 text-left text-xs space-y-2 shadow-sm">
+              <div className="font-bold text-stone-900 dark:text-stone-100 mb-1">
                 Ao assinar o Kiwify Premium você desbloqueia:
               </div>
-              <div className="flex items-center gap-2 text-stone-700">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>Todos os 150 Salmos completos de Gênesis aos Salmos</span>
               </div>
-              <div className="flex items-center gap-2 text-stone-700">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>Narração em voz alta de cada versículo</span>
               </div>
-              <div className="flex items-center gap-2 text-stone-700">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>Download para leitura em modo offline sem internet</span>
               </div>
-              <div className="flex items-center gap-2 text-stone-700">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>Experiência 100% livre de qualquer anúncio</span>
               </div>
             </div>
@@ -331,7 +331,7 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
 
               <button
                 onClick={() => setLockedPsalmPreview(null)}
-                className="w-full py-2 text-xs text-stone-500 hover:text-stone-700 transition"
+                className="w-full py-2 text-xs text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition"
               >
                 Voltar à página inicial
               </button>
@@ -343,14 +343,14 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
       {/* Immersive Psalm Reader Modal for Subscribers */}
       {activePsalm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/75 backdrop-blur-md overflow-y-auto animate-fadeIn">
-          <div className="bg-stone-50 border border-stone-200 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative text-stone-800 my-auto">
+          <div className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative text-stone-800 dark:text-stone-200 my-auto">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-stone-200">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-stone-200 dark:border-stone-800">
               <div className="flex items-center gap-2">
                 <span className="w-8 h-8 rounded-lg bg-amber-600 text-white font-bold flex items-center justify-center text-xs">
                   #{activePsalm.number}
                 </span>
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-900 bg-amber-100 px-2.5 py-1 rounded-md">
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200 bg-amber-100 dark:bg-amber-950/60 px-2.5 py-1 rounded-md">
                   {activePsalm.theme}
                 </span>
               </div>
@@ -358,7 +358,7 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setFontSize(fontSize === 'normal' ? 'grande' : 'normal')}
-                  className="px-2.5 py-1 text-xs font-bold rounded border border-stone-300 text-stone-700 hover:bg-stone-100"
+                  className="px-2.5 py-1 text-xs font-bold rounded border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800"
                   title="Ajustar tamanho da fonte"
                 >
                   {fontSize === 'normal' ? 'A+' : 'A-'}
@@ -368,8 +368,8 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
                   onClick={() => onToggleOffline(`salmo-${activePsalm.number}`, activePsalm.title)}
                   className={`p-1.5 rounded-lg border text-xs transition ${
                     profile.savedOfflineIds.includes(`salmo-${activePsalm.number}`)
-                      ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
-                      : 'border-stone-300 text-stone-500 hover:bg-stone-100'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300'
+                      : 'border-stone-300 dark:border-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
                   }`}
                   title="Salvar para ler offline"
                 >
@@ -380,8 +380,8 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
                   onClick={() => onToggleFavorite(`salmo-${activePsalm.number}`)}
                   className={`p-1.5 rounded-lg border text-xs transition ${
                     profile.favoriteIds.includes(`salmo-${activePsalm.number}`)
-                      ? 'bg-rose-50 border-rose-300 text-rose-600'
-                      : 'border-stone-300 text-stone-500 hover:bg-stone-100'
+                      ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400'
+                      : 'border-stone-300 dark:border-stone-700 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
                   }`}
                   title="Favoritar Salmo"
                 >
@@ -390,7 +390,7 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
 
                 <button
                   onClick={handleCloseModal}
-                  className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-200 transition"
+                  className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-800 transition"
                   aria-label="Fechar"
                 >
                   ✕
@@ -400,24 +400,24 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
 
             {/* Title & Summary */}
             <div className="mb-4">
-              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-950 mb-1">
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-950 dark:text-stone-100 mb-1">
                 Salmo {activePsalm.number} &bull; {activePsalm.title}
               </h2>
-              <p className="text-xs sm:text-sm text-stone-600 italic">
+              <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 italic">
                 {activePsalm.summary}
               </p>
             </div>
 
             {/* Verses List */}
-            <div className="my-5 space-y-3 bg-white p-5 sm:p-6 rounded-2xl border border-stone-200 shadow-inner max-h-[50vh] overflow-y-auto">
+            <div className="my-5 space-y-3 bg-white dark:bg-stone-950 p-5 sm:p-6 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-inner dark:shadow-stone-950 max-h-[50vh] overflow-y-auto">
               {activePsalm.verses.map((v) => (
                 <p
                   key={v.verseNumber}
-                  className={`font-serif leading-relaxed text-stone-800 ${
+                  className={`font-serif leading-relaxed text-stone-800 dark:text-stone-100 ${
                     fontSize === 'grande' ? 'text-lg sm:text-xl' : 'text-sm sm:text-base'
                   }`}
                 >
-                  <sup className="text-xs font-bold text-amber-700 mr-1.5 not-italic select-none">
+                  <sup className="text-xs font-bold text-amber-700 dark:text-amber-400 mr-1.5 not-italic select-none">
                     {v.verseNumber}
                   </sup>
                   {v.text}
@@ -426,22 +426,22 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
             </div>
 
             {/* Devotional commentary card */}
-            <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-4 mb-4 text-xs sm:text-sm text-stone-700">
-              <strong className="text-amber-900 font-bold block mb-1">
+            <div className="bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/40 rounded-xl p-4 mb-4 text-xs sm:text-sm text-stone-700 dark:text-stone-300">
+              <strong className="text-amber-900 dark:text-amber-200 font-bold block mb-1">
                 Reflexão Devocional:
               </strong>
               {activePsalm.devotionalInsight}
             </div>
 
             {/* Actions Bar */}
-            <div className="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-stone-200">
+            <div className="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-stone-200 dark:border-stone-800">
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleToggleNarration}
                   className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition shadow-sm ${
                     isSpeaking
                       ? 'bg-amber-600 text-white animate-pulse'
-                      : 'bg-amber-100 hover:bg-amber-200 text-amber-900'
+                      : 'bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-amber-900 dark:text-amber-200 border border-amber-300/40 dark:border-amber-800/50'
                   }`}
                 >
                   {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -450,17 +450,17 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
 
                 <button
                   onClick={handleShare}
-                  className="p-2 rounded-xl border border-stone-300 text-stone-600 hover:bg-stone-100 text-xs font-medium flex items-center gap-1.5 transition"
+                  className="p-2 rounded-xl border border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 text-xs font-medium flex items-center gap-1.5 transition"
                   title="Compartilhar Salmo"
                 >
-                  {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Share2 className="w-4 h-4" />}
+                  {copied ? <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <Share2 className="w-4 h-4" />}
                   <span className="hidden sm:inline">Compartilhar</span>
                 </button>
               </div>
 
               <button
                 onClick={handleCloseModal}
-                className="py-2 px-5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-semibold shadow transition"
+                className="py-2 px-5 bg-stone-900 dark:bg-amber-600 hover:bg-stone-800 dark:hover:bg-amber-500 text-white rounded-xl text-xs font-semibold shadow transition"
               >
                 Concluir Leitura
               </button>
