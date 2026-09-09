@@ -33,7 +33,7 @@ import {
   BookMarked,
   CheckCircle2,
   Instagram,
-  Smartphone
+  MessageCircle
 } from 'lucide-react';
 import { AppAdminConfig, DailyVerse, UserProfile, ContentViewLog, ContentViewType } from '../types';
 import { StorageService } from '../services/storageService';
@@ -95,7 +95,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   const handleLogin = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    const targetPin = (adminConfig.adminPin || '1478').trim();
+    const targetPin = (adminConfig.adminPin || '9876').trim();
     if (pinInput.trim() === targetPin) {
       setIsAuthenticated(true);
       StorageService.setAdminLoggedIn(true);
@@ -354,12 +354,24 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-sm transition shadow flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-sm transition shadow flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Unlock className="w-4 h-4" />
                 <span>Entrar no Painel</span>
               </button>
             </form>
+
+            <div className="pt-3 border-t border-stone-200/60 dark:border-stone-800/80">
+              <a
+                href={adminConfig.supportWhatsAppUrl || 'https://wa.link/18u8sf'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-stone-500 dark:text-stone-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition inline-flex items-center gap-1.5 font-medium"
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Suporte via WhatsApp</span>
+              </a>
+            </div>
           </div>
         ) : (
           /* Authenticated Admin Dashboard */
@@ -615,30 +627,40 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                   </div>
                 </div>
 
-                {/* Android & PWA Application Setup Status */}
-                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/80 rounded-2xl p-4 space-y-3">
+                {/* WhatsApp Support Configuration */}
+                <div className="bg-white border border-stone-200 rounded-2xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <h4 className="font-serif font-bold text-stone-900 text-sm flex items-center gap-1.5">
-                      <Smartphone className="w-4 h-4 text-emerald-600" />
-                      <span>Aplicativo Android &amp; PWA (Status &amp; Publicação)</span>
+                      <MessageCircle className="w-4 h-4 text-emerald-600" />
+                      <span>Canal de Suporte WhatsApp</span>
                     </h4>
-                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
-                      Pronto para Android
-                    </span>
-                  </div>
-                  <p className="text-xs text-stone-600 leading-relaxed">
-                    O aplicativo está 100% configurado com <strong>Web App Manifest</strong>, ícones de 192px/512px, modo <em>standalone</em> (sem barras de navegador) e <strong>Service Worker</strong> para cache offline. Usuários de Android podem instalar diretamente no celular ou você pode gerar o arquivo <strong>.APK</strong> para a Google Play Store.
-                  </p>
-                  <div className="flex items-center gap-2 pt-1">
                     <a
-                      href="https://www.pwabuilder.com"
+                      href={adminConfig.supportWhatsAppUrl || 'https://wa.link/18u8sf'}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs rounded-xl flex items-center gap-1.5 transition"
+                      className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold flex items-center gap-1 hover:underline"
                     >
-                      <span>Gerar APK com PWABuilder</span>
+                      <span>Testar link</span>
                       <ExternalLink className="w-3 h-3" />
                     </a>
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-stone-700 text-xs mb-1">
+                      Link do Suporte WhatsApp:
+                    </label>
+                    <input
+                      type="url"
+                      value={adminConfig.supportWhatsAppUrl || ''}
+                      onChange={(e) =>
+                        setAdminConfig({ ...adminConfig, supportWhatsAppUrl: e.target.value })
+                      }
+                      placeholder="https://wa.link/18u8sf"
+                      className="w-full px-3 py-2 text-xs border border-stone-300 rounded-xl bg-white font-mono"
+                    />
+                    <p className="text-[10px] text-stone-500 mt-1">
+                      Link direto para atendimento e suporte aos fiéis e membros da comunidade.
+                    </p>
                   </div>
                 </div>
 

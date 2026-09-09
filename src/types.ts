@@ -98,6 +98,7 @@ export interface AppAdminConfig {
   announcementActive: boolean;
   instagramUrl?: string;
   instagramHandle?: string;
+  supportWhatsAppUrl?: string;
 }
 
 export type ContentViewType =

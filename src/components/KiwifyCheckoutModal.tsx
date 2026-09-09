@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Sparkles, X, Shield, ExternalLink } from 'lucide-react';
+import { CheckCircle2, Sparkles, X, Shield, ExternalLink, MessageCircle } from 'lucide-react';
 import { UserProfile } from '../types';
 import { soundService } from '../services/soundService';
 import { getKiwifyCheckoutUrl } from '../config/paymentConfig';
@@ -159,7 +159,7 @@ export const KiwifyCheckoutModal: React.FC<KiwifyCheckoutModalProps> = ({
         </div>
 
         {/* Footer info */}
-        <div className="text-center text-[11px] text-stone-500 space-y-1">
+        <div className="text-center text-[11px] text-stone-500 space-y-2">
           <div className="flex items-center justify-center gap-1">
             <Shield className="w-3.5 h-3.5 text-emerald-600" />
             <span>Transação processada com criptografia de ponta a ponta pela Kiwify.</span>
@@ -167,6 +167,17 @@ export const KiwifyCheckoutModal: React.FC<KiwifyCheckoutModalProps> = ({
           <p className="text-[10px] text-stone-400">
             Acesso liberado imediatamente após a confirmação do pagamento no Kiwify.
           </p>
+          <div className="pt-1">
+            <a
+              href="https://wa.link/18u8sf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-900 font-semibold transition hover:underline"
+            >
+              <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Dúvidas? Atendimento no WhatsApp</span>
+            </a>
+          </div>
         </div>
       </div>
     </div>

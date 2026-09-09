@@ -14,7 +14,7 @@ import {
   ShieldAlert,
   BookMarked,
   Instagram,
-  Smartphone
+  MessageCircle
 } from 'lucide-react';
 import { UserProfile, ThemeMode } from '../types';
 import { soundService } from '../services/soundService';
@@ -26,9 +26,9 @@ interface NavbarProps {
   profile: UserProfile;
   onOpenCheckout: () => void;
   onOpenAdmin: () => void;
-  onOpenAndroidInstall?: () => void;
   isAdmin?: boolean;
   instagramUrl?: string;
+  supportWhatsAppUrl?: string;
   currentTheme?: ThemeMode;
   isEffectiveDark?: boolean;
   onThemeChange?: (theme: ThemeMode) => void;
@@ -40,9 +40,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   profile,
   onOpenCheckout,
   onOpenAdmin,
-  onOpenAndroidInstall,
   isAdmin = false,
   instagramUrl = 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm',
+  supportWhatsAppUrl = 'https://wa.link/18u8sf',
   currentTheme = 'auto',
   isEffectiveDark = false,
   onThemeChange = () => {}
@@ -257,18 +257,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </div>
 
-              {/* Android App Install Button */}
-              {onOpenAndroidInstall && (
-                <button
-                  id="btn-android-nav"
-                  onClick={onOpenAndroidInstall}
-                  className="p-2 rounded-xl text-xs font-medium transition flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 hover:text-white hover:border-emerald-300 hover:bg-emerald-900/60"
-                  title="Transformar em App Android (Instalar no Celular)"
-                >
-                  <Smartphone className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span className="hidden xl:inline text-[11px] font-bold">App Android</span>
-                </button>
-              )}
+              {/* WhatsApp Support Link */}
+              <a
+                id="btn-support-nav"
+                href={supportWhatsAppUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-xl text-xs font-medium transition flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 hover:text-white hover:border-emerald-300 hover:bg-emerald-900/60"
+                title="Fale Conosco no WhatsApp (Suporte)"
+              >
+                <MessageCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="hidden xl:inline text-[11px] font-bold">Suporte</span>
+              </a>
 
               {/* Instagram Official Community Link */}
               <a

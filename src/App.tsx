@@ -15,11 +15,9 @@ import { KiwifyCheckoutModal } from './components/KiwifyCheckoutModal';
 import { MorningNotificationModal } from './components/MorningNotificationModal';
 import { OfflineLockedModal } from './components/OfflineLockedModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
-import { AndroidInstallModal } from './components/AndroidInstallModal';
-import { usePWAInstall } from './hooks/usePWAInstall';
 import { useTheme } from './hooks/useTheme';
 import { soundService } from './services/soundService';
-import { Bell, ShieldAlert, Sparkles, X, Instagram, ExternalLink, Smartphone, Download, Sun, Moon } from 'lucide-react';
+import { Bell, ShieldAlert, Sparkles, X, Instagram, ExternalLink, Sun, Moon, MessageCircle } from 'lucide-react';
 
 export default function App() {
   const { theme, isDark, setTheme } = useTheme();
@@ -29,15 +27,12 @@ export default function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
-  const [isAndroidModalOpen, setIsAndroidModalOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(StorageService.isAdminLoggedIn());
   const [adminConfig, setAdminConfig] = useState<AppAdminConfig>(StorageService.getAdminConfig());
   const [dismissBanner, setDismissBanner] = useState(false);
   const [offlineModalInfo, setOfflineModalInfo] = useState<{ isOpen: boolean; title?: string }>({
     isOpen: false
   });
-
-  const { isInstallable, isInstalled, install: installPWA } = usePWAInstall();
 
   // Selected date for devotional browsing (defaults to today)
   const [selectedDate, setSelectedDate] = useState<string>(
@@ -125,9 +120,9 @@ export default function App() {
         profile={profile}
         onOpenCheckout={() => setIsCheckoutOpen(true)}
         onOpenAdmin={() => setIsAdminModalOpen(true)}
-        onOpenAndroidInstall={() => setIsAndroidModalOpen(true)}
         isAdmin={isAdmin}
         instagramUrl={adminConfig.instagramUrl}
+        supportWhatsAppUrl={adminConfig.supportWhatsAppUrl || 'https://wa.link/18u8sf'}
         currentTheme={theme}
         isEffectiveDark={isDark}
         onThemeChange={setTheme}
@@ -210,44 +205,6 @@ export default function App() {
                 <span>Seguir no Instagram</span>
                 <ExternalLink className="w-3.5 h-3.5 text-white/80" />
               </a>
-            </section>
-
-            {/* Android PWA Install Banner */}
-            <section
-              id="android-install-banner"
-              aria-label="Instalar no Android"
-              className="bg-gradient-to-r from-emerald-950 via-stone-900 to-emerald-950 text-stone-100 rounded-3xl p-6 sm:p-7 border border-emerald-800/40 shadow-xl relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-amber-500 text-white flex items-center justify-center shadow-lg shadow-emerald-950/50 shrink-0">
-                  <Smartphone className="w-7 h-7" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-300 bg-emerald-500/20 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
-                      Disponível para Celular
-                    </span>
-                    <span className="text-xs text-emerald-200/90 font-medium">
-                      App Android Oficial (PWA / APK)
-                    </span>
-                  </div>
-                  <h3 className="font-serif font-bold text-lg sm:text-xl text-amber-100">
-                    Instale o Palavra &amp; Paz no seu Android
-                  </h3>
-                  <p className="text-xs sm:text-sm text-stone-300 max-w-xl leading-relaxed mt-0.5">
-                    Instale como aplicativo nativo no seu smartphone para acessar com um toque na tela inicial, ouvir áudios e praticar suas orações em tela cheia e offline.
-                  </p>
-                </div>
-              </div>
-
-              <button
-                id="btn-android-home-install"
-                onClick={() => setIsAndroidModalOpen(true)}
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-emerald-950/40 transition transform active:scale-95 shrink-0 cursor-pointer"
-              >
-                <Download className="w-4 h-4" />
-                <span>{isInstalled ? 'Opções do App Android' : 'Instalar App Android'}</span>
-              </button>
             </section>
           </div>
         )}
@@ -345,15 +302,17 @@ export default function App() {
               )}
             </button>
 
-            <button
-              id="footer-btn-android"
-              onClick={() => setIsAndroidModalOpen(true)}
+            <a
+              id="footer-btn-support"
+              href={adminConfig.supportWhatsAppUrl || 'https://wa.link/18u8sf'}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-semibold flex items-center gap-1 transition"
-              title="Instalar Palavra &amp; Paz no celular Android"
+              title="Suporte no WhatsApp"
             >
-              <Smartphone className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>Instalar App Android</span>
-            </button>
+              <MessageCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>Suporte WhatsApp</span>
+            </a>
             <button
               onClick={() => setIsCheckoutOpen(true)}
               className="text-amber-800 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 font-semibold hover:underline flex items-center gap-1"
@@ -379,15 +338,6 @@ export default function App() {
           </div>
         </div>
       </footer>
-
-      {/* Android PWA Install Modal */}
-      <AndroidInstallModal
-        isOpen={isAndroidModalOpen}
-        onClose={() => setIsAndroidModalOpen(false)}
-        isInstallable={isInstallable}
-        isInstalled={isInstalled}
-        onInstall={installPWA}
-      />
 
       {/* Admin Panel Modal */}
       <AdminPanelModal

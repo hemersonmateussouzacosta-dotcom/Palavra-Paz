@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Share2, Bell, Heart, Sparkles, Check, Bookmark, Calendar, Download, Lock } from 'lucide-react';
+import { Volume2, VolumeX, Share2, Bell, Heart, Sparkles, Check, Bookmark, Calendar, Download, Lock, MessageCircle } from 'lucide-react';
 import { DailyVerse } from '../types';
 import { audioSpeechService } from '../services/audioSpeechService';
 import { soundService } from '../services/soundService';
@@ -30,6 +30,8 @@ export const DailyVerseCard: React.FC<DailyVerseCardProps> = ({
 }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState<string | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
 
   // Formatting date for display in Portuguese
   const formatDateLabel = (dateStr?: string) => {
@@ -95,22 +97,77 @@ export const DailyVerseCard: React.FC<DailyVerseCardProps> = ({
   };
 
   const handleShare = async () => {
-    const shareText = `☀️ *Versículo do Dia • Palavra & Paz*\n\n"${verse.text}"\n— ${verse.reference}\n\n*Reflexão:* ${verse.reflection}\n\n*Prática:* ${verse.actionPrompt}`;
+    setIsSharing(true);
+    const appUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const shareText = `☀️ *Versículo do Dia • Palavra & Paz*\n\n"${verse.text}"\n— ${verse.reference}\n\n📖 *Reflexão:* ${verse.reflection}\n\n✨ *Prática para hoje:* ${verse.actionPrompt}\n\nLeia mais devocionais diários em: ${appUrl}`;
+
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: `Versículo do Dia - ${verse.reference}`,
-          text: shareText
-        });
-      } else {
+      // Prioritize modern Web Share API (navigator.share)
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        const shareData = {
+          title: `Versículo do Dia: ${verse.reference} • Palavra & Paz`,
+          text: shareText,
+          url: appUrl
+        };
+
+        if (!navigator.canShare || navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+          setShareSuccess('Versículo compartilhado com sucesso!');
+          soundService.playChime(660, 1);
+          StorageService.recordView({
+            type: 'versiculo',
+            title: `Compartilhamento: ${verse.reference}`,
+            subtitle: 'Enviado via Web Share API',
+            category: verse.theme
+          });
+          setTimeout(() => setShareSuccess(null), 3500);
+          setIsSharing(false);
+          return;
+        }
+      }
+
+      // Fallback to Clipboard API if Web Share is not supported or not allowed
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(shareText);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        soundService.playChime(528, 1);
+        setShareSuccess('Texto do versículo copiado! Cole nas suas redes sociais ou no WhatsApp.');
+        StorageService.recordView({
+          type: 'versiculo',
+          title: `Copiado para compartilhar: ${verse.reference}`,
+          subtitle: 'Copiado para a área de transferência',
+          category: verse.theme
+        });
+        setTimeout(() => {
+          setCopied(false);
+          setShareSuccess(null);
+        }, 4000);
+      } else {
+        setShareSuccess('Selecione e copie o texto para compartilhar.');
+        setTimeout(() => setShareSuccess(null), 3000);
       }
-    } catch {
-      await navigator.clipboard.writeText(shareText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+    } catch (err: unknown) {
+      // If user simply closed/aborted the native share sheet, ignore gracefully
+      if (err && typeof err === 'object' && 'name' in err && (err as { name: string }).name === 'AbortError') {
+        setIsSharing(false);
+        return;
+      }
+      // If Web Share failed for another reason, fallback to clipboard
+      try {
+        if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(shareText);
+          setCopied(true);
+          setShareSuccess('Texto copiado para a área de transferência!');
+          setTimeout(() => {
+            setCopied(false);
+            setShareSuccess(null);
+          }, 3000);
+        }
+      } catch {
+        // ignore
+      }
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -238,19 +295,42 @@ export const DailyVerseCard: React.FC<DailyVerseCardProps> = ({
             — {verse.reference}
           </cite>
 
-          {/* Audio speech narration button */}
-          <button
-            id="btn-narrate-verse"
-            onClick={handleToggleNarration}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition shadow-sm ${
-              isSpeaking
-                ? 'bg-amber-600 text-white animate-pulse'
-                : 'bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-amber-900 dark:text-amber-200 border border-amber-300/40 dark:border-amber-800/50'
-            }`}
-          >
-            {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-            <span>{isSpeaking ? 'Pausar Narração' : 'Ouvir com Voz Serena'}</span>
-          </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Audio speech narration button */}
+            <button
+              id="btn-narrate-verse"
+              onClick={handleToggleNarration}
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition shadow-sm ${
+                isSpeaking
+                  ? 'bg-amber-600 text-white animate-pulse'
+                  : 'bg-amber-100 dark:bg-amber-950/60 hover:bg-amber-200 dark:hover:bg-amber-900/60 text-amber-900 dark:text-amber-200 border border-amber-300/40 dark:border-amber-800/50'
+              }`}
+            >
+              {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+              <span>{isSpeaking ? 'Pausar Narração' : 'Ouvir com Voz Serena'}</span>
+            </button>
+
+            {/* Direct Web Share button */}
+            <button
+              id="btn-share-verse-cta"
+              onClick={handleShare}
+              disabled={isSharing}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition shadow-sm bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-900 dark:text-amber-200 border border-amber-300/60 dark:border-amber-800/60 cursor-pointer active:scale-95"
+              title="Compartilhar versículo via WhatsApp, redes sociais ou copiar texto"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-emerald-700 dark:text-emerald-400 font-bold">Copiado!</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
+                  <span>Compartilhar Palavra</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -271,9 +351,62 @@ export const DailyVerseCard: React.FC<DailyVerseCardProps> = ({
         </div>
       </div>
 
-      {copied && (
-        <div className="mt-3 text-center text-xs text-emerald-700 font-semibold animate-fadeIn">
-          Versículo copiado com sucesso para a área de transferência!
+      {/* Dedicated Social & Message Sharing Banner */}
+      <div className="mt-5 pt-4 border-t border-amber-100 dark:border-stone-800 flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-200 dark:border-amber-800/60">
+            <Share2 className="w-4 h-4" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-stone-800 dark:text-stone-200">
+              Compartilhar Bênção &amp; Fé
+            </p>
+            <p className="text-[11px] text-stone-500 dark:text-stone-400">
+              Envie este versículo e reflexão para redes sociais, WhatsApp ou grupos de oração
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            id="btn-share-verse-webshare"
+            onClick={handleShare}
+            disabled={isSharing}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 active:scale-95 shadow-sm transition cursor-pointer"
+            title="Compartilhar versículo com a API Web Share do navegador"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            <span>Compartilhar Versículo</span>
+          </button>
+
+          <a
+            id="btn-share-verse-whatsapp"
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+              `☀️ *Versículo do Dia • Palavra & Paz*\n\n"${verse.text}"\n— ${verse.reference}\n\n📖 *Reflexão:* ${verse.reflection}\n\n✨ *Prática:* ${verse.actionPrompt}\n\n${typeof window !== 'undefined' ? window.location.href : ''}`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              StorageService.recordView({
+                type: 'versiculo',
+                title: `WhatsApp: ${verse.reference}`,
+                subtitle: 'Compartilhado no WhatsApp',
+                category: verse.theme
+              });
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-emerald-800 dark:text-emerald-200 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-700 transition cursor-pointer"
+            title="Enviar mensagem direta pelo WhatsApp"
+          >
+            <MessageCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>WhatsApp</span>
+          </a>
+        </div>
+      </div>
+
+      {shareSuccess && (
+        <div className="mt-3 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 text-center text-xs text-emerald-800 dark:text-emerald-300 font-semibold flex items-center justify-center gap-1.5 animate-fadeIn">
+          <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+          <span>{shareSuccess}</span>
         </div>
       )}
     </div>

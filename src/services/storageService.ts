@@ -8,13 +8,14 @@ const VIEW_HISTORY_STORAGE_KEY = 'palavra_paz_view_history';
 const THEME_STORAGE_KEY = 'palavra_paz_theme_mode';
 
 export const DEFAULT_ADMIN_CONFIG: AppAdminConfig = {
-  adminPin: '1478',
+  adminPin: '9876',
   kiwifyCheckoutUrl: 'https://pay.kiwify.com.br/vxSeONK',
   subscriptionPrice: '14,90',
   announcementBanner: 'Bem-vindo(a) ao Palavra & Paz! Um novo devocional diário é preparado a cada amanhecer.',
   announcementActive: false,
   instagramUrl: 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm',
-  instagramHandle: '@verdadeiraluzcaminho'
+  instagramHandle: '@verdadeiraluzcaminho',
+  supportWhatsAppUrl: 'https://wa.link/18u8sf'
 };
 
 export class StorageService {
@@ -33,9 +34,12 @@ export class StorageService {
         if (!parsed.instagramHandle) {
           parsed.instagramHandle = DEFAULT_ADMIN_CONFIG.instagramHandle;
         }
-        // Atualiza PIN antigo para o novo PIN 1478 solicitado pelo usuário
-        if (!parsed.adminPin || parsed.adminPin === '1234') {
-          parsed.adminPin = '1478';
+        if (!parsed.supportWhatsAppUrl) {
+          parsed.supportWhatsAppUrl = DEFAULT_ADMIN_CONFIG.supportWhatsAppUrl;
+        }
+        // Atualiza PIN antigo para a senha definida pelo administrador
+        if (!parsed.adminPin || parsed.adminPin === '1234' || parsed.adminPin === '1478') {
+          parsed.adminPin = '9876';
         }
         return { ...DEFAULT_ADMIN_CONFIG, ...parsed };
       }
