@@ -104,6 +104,7 @@ export interface AppAdminConfig {
   instagramUrl?: string;
   instagramHandle?: string;
   supportWhatsAppUrl?: string;
+  supportPassword?: string;
   adsEnabled?: boolean;
 }
 

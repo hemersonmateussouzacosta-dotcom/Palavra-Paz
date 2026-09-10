@@ -11,6 +11,7 @@ interface KiwifyCheckoutModalProps {
   onActivateSubscription: (code?: string, planType?: 'premium' | 'ad_free') => void;
   adFreePrice?: string;
   premiumPrice?: string;
+  onRequestSupport?: () => void;
 }
 
 export const KiwifyCheckoutModal: React.FC<KiwifyCheckoutModalProps> = ({
@@ -18,7 +19,8 @@ export const KiwifyCheckoutModal: React.FC<KiwifyCheckoutModalProps> = ({
   onClose,
   onActivateSubscription,
   adFreePrice = '4,90',
-  premiumPrice = '14,90'
+  premiumPrice = '14,90',
+  onRequestSupport
 }) => {
   const [selectedPlan, setSelectedPlan] = useState<'ad_free' | 'premium'>('premium');
   const [simulatedSuccess, setSimulatedSuccess] = useState(false);
@@ -256,15 +258,26 @@ export const KiwifyCheckoutModal: React.FC<KiwifyCheckoutModalProps> = ({
             Acesso liberado imediatamente após a confirmação do pagamento no Kiwify.
           </p>
           <div className="pt-1">
-            <a
-              href="https://wa.link/18u8sf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-900 font-semibold transition hover:underline"
-            >
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Dúvidas? Atendimento no WhatsApp</span>
-            </a>
+            {onRequestSupport ? (
+              <button
+                type="button"
+                onClick={onRequestSupport}
+                className="inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-900 font-semibold transition hover:underline cursor-pointer"
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Dúvidas? Atendimento de Suporte</span>
+              </button>
+            ) : (
+              <a
+                href="https://wa.link/18u8sf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-900 font-semibold transition hover:underline"
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Dúvidas? Atendimento no WhatsApp</span>
+              </a>
+            )}
           </div>
         </div>
       </div>

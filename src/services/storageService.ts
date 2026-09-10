@@ -21,6 +21,7 @@ export const DEFAULT_ADMIN_CONFIG: AppAdminConfig = {
   instagramUrl: 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm',
   instagramHandle: '@verdadeiraluzcaminho',
   supportWhatsAppUrl: 'https://wa.link/18u8sf',
+  supportPassword: 'hmcjp159',
   adsEnabled: true
 };
 
@@ -54,6 +55,9 @@ export class StorageService {
         }
         if (!parsed.supportWhatsAppUrl) {
           parsed.supportWhatsAppUrl = DEFAULT_ADMIN_CONFIG.supportWhatsAppUrl;
+        }
+        if (!parsed.supportPassword) {
+          parsed.supportPassword = DEFAULT_ADMIN_CONFIG.supportPassword;
         }
         if (!parsed.adminUser) {
           parsed.adminUser = DEFAULT_ADMIN_CONFIG.adminUser;

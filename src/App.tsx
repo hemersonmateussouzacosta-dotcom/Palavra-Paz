@@ -16,6 +16,7 @@ import { MorningNotificationModal } from './components/MorningNotificationModal'
 import { OfflineLockedModal } from './components/OfflineLockedModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
 import { AdBanner } from './components/AdBanner';
+import { SupportAccessModal } from './components/SupportAccessModal';
 import { useTheme } from './hooks/useTheme';
 import { soundService } from './services/soundService';
 import { Bell, ShieldAlert, Sparkles, X, Instagram, ExternalLink, Sun, Moon, MessageCircle } from 'lucide-react';
@@ -28,6 +29,7 @@ export default function App() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isSupportAuthOpen, setIsSupportAuthOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(StorageService.isAdminLoggedIn());
   const [adminConfig, setAdminConfig] = useState<AppAdminConfig>(StorageService.getAdminConfig());
   const [dismissBanner, setDismissBanner] = useState(false);
@@ -56,9 +58,14 @@ export default function App() {
     setProfile(updated);
   };
 
-  const handleActivateSubscription = (code?: string) => {
-    const updated = StorageService.activatePremium(code);
-    setProfile(updated);
+  const handleActivateSubscription = (code?: string, planType: 'premium' | 'ad_free' = 'premium') => {
+    if (planType === 'ad_free') {
+      const updated = StorageService.activateAdFree(code);
+      setProfile(updated);
+    } else {
+      const updated = StorageService.activatePremium(code);
+      setProfile(updated);
+    }
   };
 
   const handleToggleFavorite = (id: string) => {
@@ -170,7 +177,10 @@ export default function App() {
             {/* Discreet Sponsored Ad Banner (Free Users) */}
             <AdBanner
               isPremium={profile.subscriptionStatus === 'premium'}
+              isAdFree={profile.subscriptionStatus === 'ad_free'}
               adsEnabled={adminConfig.adsEnabled !== false}
+              adsenseClientId={adminConfig.adsenseClientId}
+              adsenseSlotId={adminConfig.adsenseSlotId}
               onOpenCheckout={() => setIsCheckoutOpen(true)}
               variant="horizontal"
             />
@@ -238,7 +248,10 @@ export default function App() {
             />
             <AdBanner
               isPremium={profile.subscriptionStatus === 'premium'}
+              isAdFree={profile.subscriptionStatus === 'ad_free'}
               adsEnabled={adminConfig.adsEnabled !== false}
+              adsenseClientId={adminConfig.adsenseClientId}
+              adsenseSlotId={adminConfig.adsenseSlotId}
               onOpenCheckout={() => setIsCheckoutOpen(true)}
               variant="card"
             />
@@ -316,34 +329,32 @@ export default function App() {
               )}
             </button>
 
-            <a
+            <button
               id="footer-btn-support"
-              href={adminConfig.supportWhatsAppUrl || 'https://wa.link/18u8sf'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-semibold flex items-center gap-1 transition"
-              title="Suporte no WhatsApp"
+              onClick={() => setIsSupportAuthOpen(true)}
+              className="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 font-semibold flex items-center gap-1 transition cursor-pointer"
+              title="Acessar Canal de Suporte (Requer Senha de Autorização)"
             >
               <MessageCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>Suporte WhatsApp</span>
-            </a>
+              <span>Suporte</span>
+            </button>
             <button
               onClick={() => setIsCheckoutOpen(true)}
-              className="text-amber-800 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 font-semibold hover:underline flex items-center gap-1"
+              className="text-amber-800 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              <span>Assinatura Kiwify (R$ 14,90/mês)</span>
+              <span>Assinatura Kiwify</span>
             </button>
             <button
               onClick={() => setIsNotificationOpen(true)}
-              className="text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition"
+              className="text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition cursor-pointer"
             >
               Lembretes Matinais
             </button>
             <button
               id="footer-btn-admin"
               onClick={() => setIsAdminModalOpen(true)}
-              className="text-stone-400 hover:text-amber-800 dark:hover:text-amber-300 transition flex items-center gap-1 font-semibold"
+              className="text-stone-400 hover:text-amber-800 dark:hover:text-amber-300 transition flex items-center gap-1 font-semibold cursor-pointer"
               title="Painel do Administrador"
             >
               <ShieldAlert className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
@@ -372,6 +383,20 @@ export default function App() {
         onClose={() => setIsCheckoutOpen(false)}
         profile={profile}
         onActivateSubscription={handleActivateSubscription}
+        adFreePrice={adminConfig.adFreePrice}
+        premiumPrice={adminConfig.subscriptionPrice}
+        onRequestSupport={() => {
+          setIsCheckoutOpen(false);
+          setIsSupportAuthOpen(true);
+        }}
+      />
+
+      {/* Support Access Authorization Modal (requer senha de liberação) */}
+      <SupportAccessModal
+        isOpen={isSupportAuthOpen}
+        onClose={() => setIsSupportAuthOpen(false)}
+        supportWhatsAppUrl={adminConfig.supportWhatsAppUrl || 'https://wa.link/18u8sf'}
+        configuredPassword={adminConfig.supportPassword || 'hmcjp159'}
       />
 
       {/* Morning Notification Setup Modal */}

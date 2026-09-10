@@ -834,6 +834,24 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                       Link direto para atendimento e suporte aos fiéis e membros da comunidade.
                     </p>
                   </div>
+
+                  <div>
+                    <label className="block font-semibold text-stone-700 text-xs mb-1">
+                      Senha de Acesso Exclusiva do Suporte:
+                    </label>
+                    <input
+                      type="text"
+                      value={adminConfig.supportPassword || 'hmcjp159'}
+                      onChange={(e) =>
+                        setAdminConfig({ ...adminConfig, supportPassword: e.target.value })
+                      }
+                      placeholder="hmcjp159"
+                      className="w-full px-3 py-2 text-xs border border-stone-300 rounded-xl bg-white font-mono"
+                    />
+                    <p className="text-[10px] text-stone-500 mt-1">
+                      O botão de suporte foi removido do cabeçalho. Ao tentar acessar o suporte, o usuário deve digitar esta senha de autorização para ser redirecionado.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-end gap-2 pt-2">

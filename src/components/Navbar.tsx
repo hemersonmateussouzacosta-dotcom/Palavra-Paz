@@ -257,19 +257,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </div>
 
-              {/* WhatsApp Support Link */}
-              <a
-                id="btn-support-nav"
-                href={supportWhatsAppUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-xl text-xs font-medium transition flex items-center gap-1.5 bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 hover:text-white hover:border-emerald-300 hover:bg-emerald-900/60"
-                title="Fale Conosco no WhatsApp (Suporte)"
-              >
-                <MessageCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="hidden xl:inline text-[11px] font-bold">Suporte</span>
-              </a>
-
               {/* Instagram Official Community Link */}
               <a
                 id="btn-instagram-nav"
