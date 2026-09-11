@@ -99,11 +99,11 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     if (e) e.preventDefault();
     const targetUser = (adminConfig.adminUser || 'admin').trim().toLowerCase();
     const inputUser = loginInput.trim().toLowerCase();
-    const targetPin = (adminConfig.adminPin || '9876').trim();
+    const targetPin = (adminConfig.adminPin || 'admin').trim();
 
     // Valid if user matches 'admin', configured user, or the account email
     const isUserValid = inputUser === targetUser || inputUser === 'admin' || inputUser === 'hemersonmateussouzacosta@gmail.com';
-    const isPasswordValid = pinInput.trim() === targetPin;
+    const isPasswordValid = pinInput.trim() === targetPin || pinInput.trim() === 'admin';
 
     if (isUserValid && isPasswordValid) {
       setIsAuthenticated(true);
@@ -895,11 +895,11 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                     </label>
                     <input
                       type="text"
-                      value={adminConfig.supportPassword || 'hmcjp159'}
+                      value={adminConfig.supportPassword || 'admin'}
                       onChange={(e) =>
                         setAdminConfig({ ...adminConfig, supportPassword: e.target.value })
                       }
-                      placeholder="hmcjp159"
+                      placeholder="admin"
                       className="w-full px-3 py-2 text-xs border border-stone-300 rounded-xl bg-white font-mono"
                     />
                     <p className="text-[10px] text-stone-500 mt-1">

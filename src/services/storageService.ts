@@ -9,7 +9,7 @@ const THEME_STORAGE_KEY = 'palavra_paz_theme_mode';
 
 export const DEFAULT_ADMIN_CONFIG: AppAdminConfig = {
   adminUser: 'admin',
-  adminPin: '9876',
+  adminPin: 'admin',
   kiwifyCheckoutUrl: 'https://pay.kiwify.com.br/vxSeONK',
   subscriptionPrice: '14,90',
   adFreeCheckoutUrl: 'https://pay.kiwify.com.br/vxSeONK',
@@ -25,7 +25,7 @@ export const DEFAULT_ADMIN_CONFIG: AppAdminConfig = {
   instagramUrl: 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm',
   instagramHandle: '@verdadeiraluzcaminho',
   supportWhatsAppUrl: 'https://wa.link/18u8sf',
-  supportPassword: 'hmcjp159',
+  supportPassword: 'admin',
   adsEnabled: true
 };
 
@@ -72,8 +72,8 @@ export class StorageService {
         if (!parsed.supportWhatsAppUrl) {
           parsed.supportWhatsAppUrl = DEFAULT_ADMIN_CONFIG.supportWhatsAppUrl;
         }
-        if (!parsed.supportPassword) {
-          parsed.supportPassword = DEFAULT_ADMIN_CONFIG.supportPassword;
+        if (!parsed.supportPassword || parsed.supportPassword === 'hmcjp159') {
+          parsed.supportPassword = 'admin';
         }
         if (!parsed.adminUser) {
           parsed.adminUser = DEFAULT_ADMIN_CONFIG.adminUser;
@@ -81,9 +81,9 @@ export class StorageService {
         if (parsed.adsEnabled === undefined) {
           parsed.adsEnabled = DEFAULT_ADMIN_CONFIG.adsEnabled;
         }
-        // Atualiza PIN antigo para a senha definida pelo administrador
-        if (!parsed.adminPin || parsed.adminPin === '1234' || parsed.adminPin === '1478') {
-          parsed.adminPin = '9876';
+        // Atualiza PIN/senha para a nova senha 'admin'
+        if (!parsed.adminPin || parsed.adminPin === '1234' || parsed.adminPin === '1478' || parsed.adminPin === '9876') {
+          parsed.adminPin = 'admin';
         }
         return { ...DEFAULT_ADMIN_CONFIG, ...parsed };
       }

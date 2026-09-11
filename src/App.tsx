@@ -409,7 +409,7 @@ export default function App() {
         isOpen={isSupportAuthOpen}
         onClose={() => setIsSupportAuthOpen(false)}
         supportWhatsAppUrl={adminConfig.supportWhatsAppUrl || 'https://wa.link/18u8sf'}
-        configuredPassword={adminConfig.supportPassword || 'hmcjp159'}
+        configuredPassword={adminConfig.supportPassword || 'admin'}
       />
 
       {/* Morning Notification Setup Modal */}
