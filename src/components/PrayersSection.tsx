@@ -5,7 +5,6 @@ import { PRAYERS_DATA } from '../data/prayersData';
 import { audioSpeechService } from '../services/audioSpeechService';
 import { soundService } from '../services/soundService';
 import { StorageService } from '../services/storageService';
-import { SimulatedAdBanner } from './SimulatedAdBanner';
 
 interface PrayersSectionProps {
   profile: UserProfile;
@@ -20,19 +19,16 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
   onToggleFavorite,
   onToggleOffline
 }) => {
-  const [selectedFilter, setSelectedFilter] = useState<'todas' | 'gratuitas' | 'manha' | 'acalmar_alma' | 'tarde_noite'>('todas');
+  const [selectedFilter, setSelectedFilter] = useState<'todas' | 'manha' | 'acalmar_alma' | 'tarde_noite'>('todas');
   const [activePrayer, setActivePrayer] = useState<Prayer | null>(null);
-  const [lockedPrayerPreview, setLockedPrayerPreview] = useState<Prayer | null>(null);
+  const [playingPrayerId, setPlayingPrayerId] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [fontSize, setFontSize] = useState<'normal' | 'grande'>('normal');
   const [copied, setCopied] = useState(false);
 
-  const isPremium = profile.subscriptionStatus === 'premium';
-
   // Filter prayers
   const filteredPrayers = PRAYERS_DATA.filter((prayer) => {
     if (selectedFilter === 'todas') return true;
-    if (selectedFilter === 'gratuitas') return !prayer.isPremium;
     if (selectedFilter === 'manha') return prayer.category === 'manha';
     if (selectedFilter === 'acalmar_alma') return prayer.category === 'acalmar_alma';
     if (selectedFilter === 'tarde_noite') return prayer.category === 'tarde_noite';
@@ -47,17 +43,9 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
       subtitle: prayer.biblicalRef,
       category: prayer.category,
       metadata: {
-        isPremiumContent: prayer.isPremium
+        isPremiumContent: false
       }
     });
-
-    // If locked for the user
-    const isLocked = !isPremium && prayer.isPremium;
-    if (isLocked) {
-      setLockedPrayerPreview(prayer);
-      soundService.playChime(440, 1.2);
-      return;
-    }
 
     setActivePrayer(prayer);
     soundService.playChime(528, 1.5);
@@ -79,6 +67,26 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
       });
       audioSpeechService.speak(`${activePrayer.title}. ${activePrayer.text}`, () => {
         setIsSpeaking(false);
+      });
+    }
+  };
+
+  const handleToggleCardAudio = (prayer: Prayer, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (playingPrayerId === prayer.id) {
+      audioSpeechService.stop();
+      setPlayingPrayerId(null);
+    } else {
+      setPlayingPrayerId(prayer.id);
+      soundService.playChime(528, 1.5);
+      StorageService.recordView({
+        type: 'audio',
+        title: `Áudio: ${prayer.title}`,
+        subtitle: `Narração de voz (${prayer.durationMinutes} min)`,
+        category: prayer.category
+      });
+      audioSpeechService.speak(`Oração: ${prayer.title}. ${prayer.text}`, () => {
+        setPlayingPrayerId(null);
       });
     }
   };
@@ -109,37 +117,11 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
 
   return (
     <div id="prayers-section" className="space-y-6">
-      {/* Free Tier vs Premium Information Banner */}
-      {!isPremium && (
-        <div className="bg-gradient-to-r from-amber-50 via-white to-amber-100/60 border border-amber-200/90 rounded-2xl p-4 sm:p-5 shadow-sm">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-200 text-amber-900 px-2 py-0.5 rounded-md">
-                  Versão Gratuita (Free Tier)
-                </span>
-                <span className="text-xs text-stone-500">Acesso Parcial</span>
-              </div>
-              <p className="text-xs sm:text-sm text-stone-700">
-                Você tem acesso a <strong>1 oração da manhã e 1 da tarde</strong> gratuitas com anúncios recorrentes. As orações profundas para <strong>acalmar a alma, cura de ansiedade e orações noturnas</strong> são exclusivas para assinantes Kiwify.
-              </p>
-            </div>
-            <button
-              onClick={onOpenCheckout}
-              className="shrink-0 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold py-2 px-4 rounded-xl shadow transition text-xs flex items-center gap-1.5"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-200" />
-              <span>Desbloquear Tudo por R$ 14,90</span>
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Category Filter Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none text-xs">
         <button
           onClick={() => setSelectedFilter('todas')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition ${
+          className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition cursor-pointer ${
             selectedFilter === 'todas'
               ? 'bg-amber-600 text-white shadow-sm'
               : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800'
@@ -149,20 +131,8 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
         </button>
 
         <button
-          onClick={() => setSelectedFilter('gratuitas')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
-            selectedFilter === 'gratuitas'
-              ? 'bg-emerald-600 text-white shadow-sm'
-              : 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40'
-          }`}
-        >
-          <Check className="w-3 h-3" />
-          <span>Orações Gratuitas (Abertas)</span>
-        </button>
-
-        <button
           onClick={() => setSelectedFilter('manha')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
+          className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition flex items-center gap-1.5 cursor-pointer ${
             selectedFilter === 'manha'
               ? 'bg-amber-600 text-white shadow-sm'
               : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800'
@@ -174,44 +144,39 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
 
         <button
           onClick={() => setSelectedFilter('acalmar_alma')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
+          className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition flex items-center gap-1.5 cursor-pointer ${
             selectedFilter === 'acalmar_alma'
-              ? 'bg-amber-600 text-white shadow-sm'
+              ? 'bg-emerald-600 text-white shadow-sm'
               : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800'
           }`}
         >
           <Wind className="w-3.5 h-3.5 text-emerald-500" />
-          <span>Acalmar a Alma (Kiwify)</span>
+          <span>Acalmar a Alma</span>
         </button>
 
         <button
           onClick={() => setSelectedFilter('tarde_noite')}
-          className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
+          className={`px-3.5 py-1.5 rounded-full font-semibold whitespace-nowrap transition flex items-center gap-1.5 cursor-pointer ${
             selectedFilter === 'tarde_noite'
-              ? 'bg-amber-600 text-white shadow-sm'
+              ? 'bg-indigo-600 text-white shadow-sm'
               : 'bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-800'
           }`}
         >
           <Moon className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
-          <span>Tarde & Noite</span>
+          <span>Tarde &amp; Noite</span>
         </button>
       </div>
 
       {/* Prayers Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredPrayers.map((prayer) => {
-          const isLocked = !isPremium && prayer.isPremium;
-          const isFreeOption = !prayer.isPremium;
+          const isThisPlaying = playingPrayerId === prayer.id;
 
           return (
             <div
               key={prayer.id}
               onClick={() => handleOpenPrayer(prayer)}
-              className={`group relative rounded-2xl p-5 border transition cursor-pointer flex flex-col justify-between ${
-                isLocked
-                  ? 'bg-stone-100/90 dark:bg-stone-900/80 border-stone-300 dark:border-stone-800 text-stone-700 dark:text-stone-300 hover:border-amber-400 hover:shadow-sm'
-                  : 'bg-white dark:bg-stone-900 border-amber-100/90 dark:border-stone-800 text-stone-800 dark:text-stone-200 hover:shadow-md hover:border-amber-300 dark:hover:border-amber-500/50'
-              }`}
+              className="group relative rounded-2xl p-5 border transition cursor-pointer flex flex-col justify-between bg-white dark:bg-stone-900 border-amber-100/90 dark:border-stone-800 text-stone-800 dark:text-stone-200 hover:shadow-md hover:border-amber-300 dark:hover:border-amber-500/50"
             >
               <div>
                 {/* Header badges */}
@@ -232,16 +197,10 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
                       : 'Tarde / Noite'}
                   </span>
 
-                  {isLocked ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-950 dark:text-amber-200 bg-amber-200 dark:bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-300 dark:border-amber-700/60 shadow-xs">
-                      <Lock className="w-3 h-3 text-amber-800 dark:text-amber-400" />
-                      <span>Bloqueado no Grátis</span>
-                    </span>
-                  ) : (
-                    <span className="text-[10px] text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
-                      {isFreeOption && !isPremium ? 'Gratuito (Com Anúncios)' : 'Liberado'}
-                    </span>
-                  )}
+                  <span className="inline-flex items-center gap-1 text-[10px] text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
+                    <Volume2 className="w-2.5 h-2.5" />
+                    <span>Áudio Liberado</span>
+                  </span>
                 </div>
 
                 {/* Title and summary */}
@@ -253,101 +212,35 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
                 </p>
               </div>
 
-              {/* Footer row */}
+              {/* Footer row with Audio CTA and Read button */}
               <div className="pt-3 border-t border-stone-200/60 dark:border-stone-800 flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
-                <span className="text-[11px] font-medium text-amber-800 dark:text-amber-400">
+                <span className="text-[11px] font-medium text-amber-800 dark:text-amber-400 truncate max-w-[120px]">
                   {prayer.biblicalRef}
                 </span>
 
-                <div className="flex items-center gap-1.5">
-                  {isLocked ? (
-                    <span className="text-amber-900 dark:text-amber-300 font-bold flex items-center gap-1 text-xs">
-                      Desbloquear <ArrowRight className="w-3 h-3" />
-                    </span>
-                  ) : (
-                    <span className="text-stone-700 dark:text-stone-300 font-semibold group-hover:text-amber-700 dark:group-hover:text-amber-400 flex items-center gap-1 text-xs">
-                      Orar agora &rarr;
-                    </span>
-                  )}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={(e) => handleToggleCardAudio(prayer, e)}
+                    className={`px-2.5 py-1 rounded-lg border text-[11px] font-semibold flex items-center gap-1 transition cursor-pointer ${
+                      isThisPlaying
+                        ? 'bg-amber-600 text-white border-amber-600 animate-pulse'
+                        : 'bg-amber-50 dark:bg-stone-800 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-stone-700 hover:bg-amber-100'
+                    }`}
+                    title={isThisPlaying ? 'Pausar narração em áudio' : 'Ouvir oração em áudio'}
+                  >
+                    {isThisPlaying ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
+                    <span>{isThisPlaying ? 'Pausar' : 'Áudio'}</span>
+                  </button>
+
+                  <span className="text-stone-700 dark:text-stone-300 font-semibold group-hover:text-amber-700 dark:group-hover:text-amber-400 flex items-center gap-1 text-xs">
+                    Orar &rarr;
+                  </span>
                 </div>
               </div>
             </div>
           );
         })}
       </div>
-
-      {/* Locked Prayer Upgrade Teaser Modal */}
-      {lockedPrayerPreview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/75 backdrop-blur-md overflow-y-auto animate-fadeIn">
-          <div className="bg-stone-50 dark:bg-stone-900 border border-amber-300 dark:border-amber-700/60 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative text-stone-800 dark:text-stone-200 text-center my-auto">
-            <button
-              onClick={() => setLockedPrayerPreview(null)}
-              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 p-1.5 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 transition"
-              aria-label="Fechar"
-            >
-              ✕
-            </button>
-
-            <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700/60 text-amber-800 dark:text-amber-300 flex items-center justify-center mx-auto mb-3">
-              <Lock className="w-7 h-7" />
-            </div>
-
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200 bg-amber-200 dark:bg-amber-950/80 px-3 py-1 rounded-full inline-block mb-2">
-              Conteúdo Exclusivo Kiwify Premium
-            </span>
-
-            <h3 className="font-serif text-xl font-bold text-stone-950 dark:text-stone-100 mb-1.5">
-              {lockedPrayerPreview.title}
-            </h3>
-
-            <p className="text-xs text-stone-600 dark:text-stone-400 mb-4 leading-relaxed">
-              Esta oração para {lockedPrayerPreview.category === 'acalmar_alma' ? 'acalmar a ansiedade e trazer paz interior' : 'fortalecimento espiritual'} faz parte do acervo premium de orações sem cortes.
-            </p>
-
-            <div className="bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl p-3.5 mb-5 text-left text-xs space-y-1.5">
-              <strong className="text-stone-900 dark:text-stone-100 font-bold block mb-1">
-                No Plano Kiwify você tem:
-              </strong>
-              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
-                <span>Todas as orações matinais, de cura e noturnas</span>
-              </div>
-              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
-                <span>Todos os 150 Salmos completos narrados</span>
-              </div>
-              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
-                <span>Acesso offline sem necessidade de internet</span>
-              </div>
-              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
-                <span>Sem anúncios recorrentes</span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <button
-                onClick={() => {
-                  setLockedPrayerPreview(null);
-                  onOpenCheckout();
-                }}
-                className="w-full py-3 px-4 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Assinar no Kiwify por R$ 14,90/mês</span>
-              </button>
-
-              <button
-                onClick={() => setLockedPrayerPreview(null)}
-                className="w-full py-2 text-xs text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition"
-              >
-                Continuar nas orações gratuitas
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Reader Modal for Open Prayers */}
       {activePrayer && (
@@ -424,11 +317,6 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
               </p>
             </div>
 
-            {/* Recurring Ad Ticker for Free Users during reading sessions */}
-            {!isPremium && (
-              <SimulatedAdBanner onUpgradeClick={onOpenCheckout} variant="recurring-ticker" />
-            )}
-
             {/* Prayer Text Content */}
             <div
               className={`font-serif text-stone-800 dark:text-stone-100 leading-relaxed whitespace-pre-line my-4 p-4 sm:p-6 bg-white dark:bg-stone-950 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-inner dark:shadow-stone-950 ${
@@ -437,11 +325,6 @@ export const PrayersSection: React.FC<PrayersSectionProps> = ({
             >
               {activePrayer.text}
             </div>
-
-            {/* Bottom recurring card ad for free reading experience */}
-            {!isPremium && (
-              <SimulatedAdBanner onUpgradeClick={onOpenCheckout} variant="card" />
-            )}
 
             {/* Action buttons */}
             <div className="flex items-center justify-between flex-wrap gap-2 pt-3 border-t border-stone-200 dark:border-stone-800">

@@ -88,22 +88,12 @@ export const ProgressDashboard: React.FC<ProgressDashboardProps> = ({
             </div>
           </div>
 
-          {/* Subscription Status Badge */}
+          {/* Access Status Badge */}
           <div className="flex items-center gap-2">
-            {isPremium ? (
-              <div className="bg-amber-500/20 border border-amber-500/40 text-amber-300 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5">
-                <Shield className="w-4 h-4 text-amber-400" />
-                <span>Assinatura Kiwify Ativa (R$ 14,90/mês)</span>
-              </div>
-            ) : (
-              <button
-                onClick={onOpenCheckout}
-                className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-3.5 py-1.5 rounded-xl text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Plano Gratuito &bull; Assinar Kiwify (R$ 14,90/mês)</span>
-              </button>
-            )}
+            <div className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5">
+              <Shield className="w-4 h-4 text-emerald-400" />
+              <span>Acesso Gratuito e Ilimitado</span>
+            </div>
           </div>
         </div>
 

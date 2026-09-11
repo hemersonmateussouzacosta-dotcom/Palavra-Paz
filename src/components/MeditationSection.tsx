@@ -26,8 +26,6 @@ export const MeditationSection: React.FC<MeditationSectionProps> = ({
   const [narrationActive, setNarrationActive] = useState(true);
   const [completedNotification, setCompletedNotification] = useState(false);
 
-  const isPremium = profile.subscriptionStatus === 'premium';
-
   // Breathing cycle animation timer (4s inspire, 4s segure, 4s expire, 2s repouse)
   useEffect(() => {
     if (!isPlaying) return;
@@ -96,15 +94,10 @@ export const MeditationSection: React.FC<MeditationSectionProps> = ({
       subtitle: `${med.durationMinutes} min • ${med.theme}`,
       category: med.theme,
       metadata: {
-        isPremiumContent: med.isPremium,
+        isPremiumContent: false,
         durationSeconds: med.durationMinutes * 60
       }
     });
-
-    if (med.isPremium && !isPremium) {
-      onOpenCheckout();
-      return;
-    }
 
     setActiveMeditation(med);
     setCurrentStageIndex(0);
@@ -146,44 +139,24 @@ export const MeditationSection: React.FC<MeditationSectionProps> = ({
   return (
     <div id="meditation-section" className="space-y-6">
       {/* Header Info */}
-      <div className="bg-white/90 border border-stone-200 rounded-2xl p-5 sm:p-6 shadow-sm">
+      <div className="bg-white/90 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-5 sm:p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 flex items-center justify-center">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <div className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-900 bg-amber-200/80 px-2 py-0.5 rounded-full mb-1">
-              <Sparkles className="w-3 h-3 text-amber-700" />
-              <span>Conteúdo Exclusivo Kiwify Pro</span>
+            <div className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200 bg-amber-200/80 dark:bg-amber-950/60 px-2 py-0.5 rounded-full mb-1">
+              <Sparkles className="w-3 h-3 text-amber-700 dark:text-amber-400" />
+              <span>Meditações 100% Gratuitas com Áudio e Respiração</span>
             </div>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-stone-900">
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 dark:text-stone-100">
               Meditação Bíblica Guiada
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600">
-              Aquiete a sua respiração e ancore o coração nas promessas divinas de paz e descanso com condução por áudio e sons celestiais.
+            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400">
+              Aquiete a sua respiração e ancore o coração nas promessas divinas de paz e descanso com condução serena por áudio e sons celestiais.
             </p>
           </div>
         </div>
-
-        {!isPremium && (
-          <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-amber-100/60 border border-amber-200 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-            <div className="text-amber-900">
-              <strong className="block text-amber-950 font-bold mb-0.5">
-                Exclusivo para Assinantes Kiwify Pro (R$ 14,90/mês):
-              </strong>
-              <span>
-                Todas as meditações guiadas contam com ciclos de respiração conscientes, paisagens sonoras celestiais relaxantes e condução serena por áudio.
-              </span>
-            </div>
-            <button
-              onClick={onOpenCheckout}
-              className="bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold py-2 px-4 rounded-xl shadow shrink-0 flex items-center gap-1.5"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Assinar por R$ 14,90</span>
-            </button>
-          </div>
-        )}
       </div>
 
       {completedNotification && (
@@ -292,67 +265,42 @@ export const MeditationSection: React.FC<MeditationSectionProps> = ({
       {/* Meditation Cards List */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {GUIDED_MEDITATIONS.map((med) => {
-          const isLocked = med.isPremium && !isPremium;
           return (
             <div
               key={med.id}
-              className={`rounded-2xl p-5 sm:p-6 border transition flex flex-col justify-between ${
-                isLocked
-                  ? 'bg-stone-100/90 border-stone-200 opacity-90'
-                  : 'bg-white border-stone-200 hover:border-amber-400 shadow-sm hover:shadow-md'
-              }`}
+              className="rounded-2xl p-5 sm:p-6 border transition flex flex-col justify-between bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500 shadow-sm hover:shadow-md text-stone-800 dark:text-stone-200"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100 px-2 py-0.5 rounded-md">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-md">
                     {med.durationMinutes} minutos &bull; {med.theme}
                   </span>
 
-                  {isLocked ? (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-900 bg-amber-200 px-2.5 py-0.5 rounded-full border border-amber-300">
-                      <Lock className="w-3 h-3 text-amber-700" />
-                      <span>Kiwify Pro</span>
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                      <Sparkles className="w-3 h-3 text-emerald-600" />
-                      <span>Pro Liberado</span>
-                    </span>
-                  )}
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                    <Sparkles className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                    <span>Liberado</span>
+                  </span>
                 </div>
 
-                <h3 className="font-serif font-bold text-lg text-stone-900 mb-1.5">
+                <h3 className="font-serif font-bold text-lg text-stone-900 dark:text-stone-100 mb-1.5">
                   {med.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-stone-600 leading-relaxed mb-4">
+                <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 leading-relaxed mb-4">
                   {med.description}
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
-                <span className="text-xs text-stone-500 font-medium">
+              <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
+                <span className="text-xs text-stone-500 dark:text-stone-400 font-medium">
                   {med.stages.length} etapas guiadas com respiração
                 </span>
 
                 <button
                   onClick={() => handleStartMeditation(med)}
-                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition ${
-                    isLocked
-                      ? 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm'
-                      : 'bg-stone-900 hover:bg-stone-800 text-amber-200 shadow-sm'
-                  }`}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition bg-stone-900 hover:bg-stone-800 text-amber-200 shadow-sm cursor-pointer"
                 >
-                  {isLocked ? (
-                    <>
-                      <Lock className="w-3.5 h-3.5" />
-                      <span>Desbloquear com Pro</span>
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-3.5 h-3.5" />
-                      <span>Iniciar Meditação</span>
-                    </>
-                  )}
+                  <Play className="w-3.5 h-3.5" />
+                  <span>Iniciar Meditação</span>
                 </button>
               </div>
             </div>

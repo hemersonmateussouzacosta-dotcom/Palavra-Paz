@@ -22,12 +22,11 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTheme, setSelectedTheme] = useState<string>('todos');
   const [activePsalm, setActivePsalm] = useState<Psalm | null>(null);
-  const [lockedPsalmPreview, setLockedPsalmPreview] = useState<{ number: number; title: string; theme: string } | null>(null);
+  const [playingPsalmNum, setPlayingPsalmNum] = useState<number | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [fontSize, setFontSize] = useState<'normal' | 'grande'>('normal');
   const [copied, setCopied] = useState(false);
 
-  const isPremium = profile.subscriptionStatus === 'premium';
   const allPsalms = getAll150PsalmsDirectory();
 
   // Filter psalms based on search term or theme
@@ -44,6 +43,26 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
     return matchesSearch && matchesTheme;
   });
 
+  const getFullPsalm = (num: number, title: string, theme: string): Psalm => {
+    const found = CURATED_PSALMS.find((p) => p.number === num);
+    if (found) return found;
+
+    return {
+      number: num,
+      title: `Salmo ${num}`,
+      theme: theme || 'Confiança & Louvor Divino',
+      summary: `Meditação sagrada e cântico de confiança de Davi ao Senhor Altíssimo.`,
+      devotionalInsight: `O Salmo ${num} nos convida a entregar a nossa caminhada ao Eterno e contemplar a Sua fidelidade de geração em geração.`,
+      verses: [
+        { verseNumber: 1, text: `Do Senhor é a terra e a sua plenitude, o mundo e aqueles que nele habitam.` },
+        { verseNumber: 2, text: `Porque ele a fundou sobre os mares e a firmou sobre os rios.` },
+        { verseNumber: 3, text: `Quem subirá ao monte do Senhor ou quem permanecerá no seu santo lugar?` },
+        { verseNumber: 4, text: `Aquele que é limpo de mãos e puro de coração, que não entrega a sua alma à vaidade.` },
+        { verseNumber: 5, text: `Este obterá do Senhor a bênção e a justiça do Deus da sua salvação.` }
+      ]
+    };
+  };
+
   const handleOpenPsalm = (num: number, title: string, theme: string) => {
     // Record view in admin history
     StorageService.recordView({
@@ -52,40 +71,28 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
       subtitle: title,
       category: theme,
       metadata: {
-        isPremiumContent: true
+        isPremiumContent: false
       }
     });
 
-    // All 150 Psalms are strictly premium content for paying subscribers
-    if (!isPremium) {
-      setLockedPsalmPreview({ number: num, title, theme });
-      soundService.playChime(440, 1.2);
-      return;
-    }
-
-    // Find curated or construct complete psalm
-    const found = CURATED_PSALMS.find((p) => p.number === num);
-    if (found) {
-      setActivePsalm(found);
-    } else {
-      const dynamicPsalm: Psalm = {
-        number: num,
-        title: `Salmo ${num}`,
-        theme: theme || 'Confiança & Louvor Divino',
-        summary: `Meditação sagrada e cântico de confiança de Davi ao Senhor Altíssimo.`,
-        devotionalInsight: `O Salmo ${num} nos convida a entregar a nossa caminhada ao Eterno e contemplar a Sua fidelidade de geração em geração.`,
-        verses: [
-          { verseNumber: 1, text: `Do Senhor é a terra e a sua plenitude, o mundo e aqueles que nele habitam.` },
-          { verseNumber: 2, text: `Porque ele a fundou sobre os mares e a firmou sobre os rios.` },
-          { verseNumber: 3, text: `Quem subirá ao monte do Senhor ou quem permanecerá no seu santo lugar?` },
-          { verseNumber: 4, text: `Aquele que é limpo de mãos e puro de coração, que não entrega a sua alma à vaidade.` },
-          { verseNumber: 5, text: `Este obterá do Senhor a bênção e a justiça do Deus da sua salvação.` }
-        ]
-      };
-      setActivePsalm(dynamicPsalm);
-    }
-
+    const psalmToOpen = getFullPsalm(num, title, theme);
+    setActivePsalm(psalmToOpen);
     soundService.playChime(528, 1.5);
+  };
+
+  const handleToggleCardAudio = (num: number, title: string, theme: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (playingPsalmNum === num) {
+      audioSpeechService.stop();
+      setPlayingPsalmNum(null);
+    } else {
+      setPlayingPsalmNum(num);
+      soundService.playChime(528, 1.5);
+      const psalm = getFullPsalm(num, title, theme);
+      const versesText = psalm.verses.map((v) => `Versículo ${v.verseNumber}: ${v.text}`).join('. ');
+      const fullText = `Salmo ${psalm.number}. ${psalm.title}. ${versesText}. Reflexão: ${psalm.devotionalInsight}`;
+      audioSpeechService.speak(fullText, () => setPlayingPsalmNum(null));
+    }
   };
 
   const handleToggleNarration = () => {
@@ -138,41 +145,21 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
         <div className="max-w-2xl relative z-10">
           <div className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 px-3 py-1 rounded-full text-xs font-semibold mb-3">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Conteúdo Exclusivo Premium &bull; Coleção Completa dos 150 Salmos</span>
+            <span>Coleção Completa dos 150 Salmos Bíblicos • 100% Gratuito</span>
           </div>
           <h2 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-amber-100 mb-2">
             Espaço de Todos os 150 Salmos
           </h2>
           <p className="text-xs sm:text-sm text-stone-300 leading-relaxed mb-4">
-            A coleção completa de poesias, orações, hinos de vitória e refúgio na alma. Áudio narrado, leitura imersiva e estudo devocional disponíveis exclusivamente para assinantes Kiwify.
+            A coleção completa de poesias sagradas, orações, hinos de vitória e refúgio para a sua alma. Áudio narrado sereno e reflexão devocional liberados gratuitamente para você ouvir e meditar todos os dias.
           </p>
 
-          {!isPremium ? (
-            <div className="bg-black/50 border border-amber-500/40 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
-                  <Lock className="w-4 h-4" />
-                </div>
-                <div className="text-amber-200">
-                  <strong className="block text-amber-100 font-semibold">Exclusivo para Assinantes Kiwify:</strong>
-                  Assine por R$ 14,90/mês para desbloquear os 150 Salmos com narração e modo offline.
-                </div>
-              </div>
-              <button
-                onClick={onOpenCheckout}
-                className="shrink-0 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-4 py-2 rounded-xl transition text-xs shadow-md"
-              >
-                Desbloquear Todos os Salmos
-              </button>
-            </div>
-          ) : (
-            <div className="bg-emerald-950/60 border border-emerald-500/40 rounded-2xl p-3 flex items-center gap-2.5 text-xs text-emerald-200">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>
-                <strong>Acesso Ilimitado Ativo:</strong> Você tem permissão total para ler, ouvir e salvar offline todos os 150 Salmos.
-              </span>
-            </div>
-          )}
+          <div className="bg-emerald-950/60 border border-emerald-500/40 rounded-2xl p-3 flex items-center gap-2.5 text-xs text-emerald-200">
+            <Volume2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>
+              <strong>Áudio Liberado para Todos os Salmos:</strong> Toque no botão de áudio de qualquer salmo para ouvir a narração em voz serena a qualquer momento.
+            </span>
+          </div>
         </div>
       </div>
 
@@ -201,7 +188,7 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
             <button
               key={theme.id}
               onClick={() => setSelectedTheme(theme.id)}
-              className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap transition ${
+              className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap transition cursor-pointer ${
                 selectedTheme === theme.id
                   ? 'bg-amber-600 text-white shadow-sm'
                   : 'bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800'
@@ -216,17 +203,13 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
       {/* Psalms Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
         {filteredPsalms.map((p) => {
-          const isLocked = !isPremium;
+          const isThisPlaying = playingPsalmNum === p.number;
 
           return (
             <div
               key={p.number}
               onClick={() => handleOpenPsalm(p.number, p.title, p.theme)}
-              className={`p-4 rounded-2xl border transition cursor-pointer flex flex-col justify-between ${
-                isLocked
-                  ? 'bg-stone-100/90 dark:bg-stone-900/80 border-stone-200 dark:border-stone-800 hover:border-amber-400/80 text-stone-700 dark:text-stone-300'
-                  : 'bg-white dark:bg-stone-900 border-amber-100 dark:border-stone-800 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-md text-stone-800 dark:text-stone-200'
-              }`}
+              className="p-4 rounded-2xl border transition cursor-pointer flex flex-col justify-between bg-white dark:bg-stone-900 border-amber-100 dark:border-stone-800 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-md text-stone-800 dark:text-stone-200"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
@@ -234,16 +217,10 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
                     #{p.number}
                   </span>
 
-                  {isLocked ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-950 dark:text-amber-200 bg-amber-200 dark:bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-300 dark:border-amber-700/60">
-                      <Lock className="w-2.5 h-2.5 text-amber-800 dark:text-amber-400" />
-                      <span>Kiwify Premium</span>
-                    </span>
-                  ) : (
-                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
-                      Liberado
-                    </span>
-                  )}
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
+                    <Volume2 className="w-2.5 h-2.5" />
+                    <span>Áudio Grátis</span>
+                  </span>
                 </div>
 
                 <h4 className="font-serif font-bold text-base text-stone-900 dark:text-stone-100 mb-1">
@@ -255,11 +232,21 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
               </div>
 
               <div className="pt-2 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400">
-                <span className="truncate max-w-[140px] text-amber-800 dark:text-amber-400 font-medium">
-                  {p.theme}
-                </span>
-                <span className="text-stone-700 dark:text-stone-300 font-semibold flex items-center gap-0.5">
-                  {isLocked ? 'Desbloquear &rarr;' : 'Ler &rarr;'}
+                <button
+                  onClick={(e) => handleToggleCardAudio(p.number, p.title, p.theme, e)}
+                  className={`px-2 py-0.5 rounded-md border text-[10px] font-semibold flex items-center gap-1 transition cursor-pointer ${
+                    isThisPlaying
+                      ? 'bg-amber-600 text-white border-amber-600 animate-pulse'
+                      : 'bg-amber-50 dark:bg-stone-800 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-stone-700 hover:bg-amber-100'
+                  }`}
+                  title={isThisPlaying ? 'Pausar áudio' : 'Ouvir salmo'}
+                >
+                  {isThisPlaying ? <VolumeX className="w-2.5 h-2.5" /> : <Volume2 className="w-2.5 h-2.5" />}
+                  <span>{isThisPlaying ? 'Tocando' : 'Áudio'}</span>
+                </button>
+
+                <span className="text-stone-700 dark:text-stone-300 font-semibold flex items-center gap-0.5 hover:text-amber-600">
+                  Ler &rarr;
                 </span>
               </div>
             </div>
@@ -267,80 +254,7 @@ export const PsalmsSection: React.FC<PsalmsSectionProps> = ({
         })}
       </div>
 
-      {/* Locked Psalm Preview Paywall Modal */}
-      {lockedPsalmPreview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/75 backdrop-blur-md overflow-y-auto animate-fadeIn">
-          <div className="bg-stone-50 dark:bg-stone-900 border border-amber-300 dark:border-amber-700/60 rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl relative text-stone-800 dark:text-stone-200 text-center my-auto">
-            <button
-              onClick={() => setLockedPsalmPreview(null)}
-              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 p-1.5 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 transition"
-              aria-label="Fechar"
-            >
-              ✕
-            </button>
-
-            <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700/60 text-amber-800 dark:text-amber-300 flex items-center justify-center mx-auto mb-3">
-              <Lock className="w-7 h-7" />
-            </div>
-
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200 bg-amber-200 dark:bg-amber-950/80 px-3 py-1 rounded-full inline-block mb-2">
-              Salmos: Conteúdo Exclusivo Kiwify
-            </span>
-
-            <h3 className="font-serif text-2xl font-bold text-stone-950 dark:text-stone-100 mb-1">
-              Salmo {lockedPsalmPreview.number} &bull; {lockedPsalmPreview.title}
-            </h3>
-
-            <p className="text-xs text-stone-600 dark:text-stone-400 mb-4 leading-relaxed">
-              O leitor completo deste Salmo, reflexão bíblica, narração em áudio serena e modo offline estão disponíveis na assinatura Kiwify por <strong>R$ 14,90/mês</strong>.
-            </p>
-
-            <div className="bg-white dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-2xl p-4 mb-5 text-left text-xs space-y-2 shadow-sm">
-              <div className="font-bold text-stone-900 dark:text-stone-100 mb-1">
-                Ao assinar o Kiwify Premium você desbloqueia:
-              </div>
-              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
-                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span>Todos os 150 Salmos completos de Gênesis aos Salmos</span>
-              </div>
-              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
-                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span>Narração em voz alta de cada versículo</span>
-              </div>
-              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
-                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span>Download para leitura em modo offline sem internet</span>
-              </div>
-              <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
-                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <span>Experiência 100% livre de qualquer anúncio</span>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <button
-                onClick={() => {
-                  setLockedPsalmPreview(null);
-                  onOpenCheckout();
-                }}
-                className="w-full py-3 px-4 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Desbloquear os 150 Salmos por R$ 14,90</span>
-              </button>
-
-              <button
-                onClick={() => setLockedPsalmPreview(null)}
-                className="w-full py-2 text-xs text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition"
-              >
-                Voltar à página inicial
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Immersive Psalm Reader Modal for Subscribers */}
+      {/* Immersive Psalm Reader Modal for All Users */}
       {activePsalm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-950/75 backdrop-blur-md overflow-y-auto animate-fadeIn">
           <div className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl relative text-stone-800 dark:text-stone-200 my-auto">

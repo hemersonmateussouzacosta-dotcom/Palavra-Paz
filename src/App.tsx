@@ -3,8 +3,8 @@ import { UserProfile, PracticeLog, AppAdminConfig } from './types';
 import { StorageService } from './services/storageService';
 import { getTodayVerse } from './data/versesData';
 import { Navbar } from './components/Navbar';
-import { TrialBanner } from './components/TrialBanner';
 import { DailyVerseCard } from './components/DailyVerseCard';
+import { DailyPsalmCard } from './components/DailyPsalmCard';
 import { PrayersSection } from './components/PrayersSection';
 import { MeditationSection } from './components/MeditationSection';
 import { PracticeTimer } from './components/PracticeTimer';
@@ -114,13 +114,6 @@ export default function App() {
         </div>
       )}
 
-      {/* 3-Day Trial / Kiwify Status Banner */}
-      <TrialBanner
-        profile={profile}
-        onOpenCheckout={() => setIsCheckoutOpen(true)}
-        onSimulateDay={handleSimulateDay}
-      />
-
       {/* Main Navbar */}
       <Navbar
         activeTab={activeTab}
@@ -151,7 +144,17 @@ export default function App() {
                 onToggleFavorite={() => handleToggleFavorite(currentVerse.id)}
                 isOfflineSaved={profile.savedOfflineIds.includes(currentVerse.id)}
                 onToggleOffline={handleToggleOffline}
-                isPremium={profile.subscriptionStatus === 'premium'}
+                isPremium={true}
+              />
+            </section>
+
+            {/* Salmo do Dia (Abaixo do Versículo do Dia) */}
+            <section aria-label="Salmo do Dia">
+              <DailyPsalmCard
+                selectedDate={selectedDate}
+                onOpenAllPsalms={() => setActiveTab('salmos')}
+                onToggleFavorite={handleToggleFavorite}
+                isFavorite={profile.favoriteIds.includes(`psalm-daily-${selectedDate}`)}
               />
             </section>
 
@@ -337,13 +340,6 @@ export default function App() {
             >
               <MessageCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>Suporte</span>
-            </button>
-            <button
-              onClick={() => setIsCheckoutOpen(true)}
-              className="text-amber-800 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-300 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              <span>Assinatura Kiwify</span>
             </button>
             <button
               onClick={() => setIsNotificationOpen(true)}

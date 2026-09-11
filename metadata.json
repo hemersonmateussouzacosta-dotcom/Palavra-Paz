@@ -1,6 +1,6 @@
 {
   "name": "Palavra & Paz - Devocional Diário",
-  "description": "Aplicativo devocional diário com versículo do dia, orações para acalmar a alma, meditações guiadas, cronômetro de oração, salmos completos e assinatura Kiwify.",
+  "description": "Aplicativo devocional diário cristão totalmente gratuito com versículo do dia, salmo diário, orações com áudio, meditações guiadas, estudos bíblicos e cronômetro de oração.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

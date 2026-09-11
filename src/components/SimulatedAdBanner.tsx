@@ -20,9 +20,9 @@ const SPONSORS = [
     cta: 'Conhecer Turmas'
   },
   {
-    tag: 'Música & Harpa Cristã',
+    tag: 'Música & Louvor',
     title: 'Coletânea de Hinos Clássicos Instrumental',
-    desc: 'Mais de 500 hinos tocados ao piano e harpa para momentos de oração e comunhão no lar.',
+    desc: 'Mais de 500 hinos tocados suavemente ao piano para momentos de oração e comunhão no lar.',
     cta: 'Ouvir Prévia'
   },
   {

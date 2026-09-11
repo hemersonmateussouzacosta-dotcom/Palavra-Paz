@@ -117,11 +117,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <Headphones className="w-3.5 h-3.5" />
                 <span>Meditação Guiada</span>
-                {!isPremium && (
-                  <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1 rounded font-bold border border-amber-500/30">
-                    Pro
-                  </span>
-                )}
               </button>
 
               <button
@@ -135,11 +130,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <Heart className="w-3.5 h-3.5 text-amber-400" />
                 <span>Todos os Salmos</span>
-                {!isPremium && (
-                  <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1 rounded font-bold border border-amber-500/30">
-                    Pro
-                  </span>
-                )}
               </button>
 
               <button
@@ -166,11 +156,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <BookMarked className="w-3.5 h-3.5 text-amber-400" />
                 <span>Estudos Bíblicos</span>
-                {!isPremium && (
-                  <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1 rounded font-bold border border-amber-500/30">
-                    Pro
-                  </span>
-                )}
               </button>
 
               <button
@@ -236,7 +221,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={() => handleToggleSound('celestial')}
                       className={`w-full text-left px-3 py-1.5 hover:bg-stone-700 flex items-center justify-between ${ambientSound === 'celestial' ? 'text-amber-400 font-semibold' : ''}`}
                     >
-                      <span>Harpa &amp; Som Celestial</span>
+                      <span>Som Celestial &amp; Paz</span>
                       {ambientSound === 'celestial' && <span className="text-[10px]">&bull;</span>}
                     </button>
                     <button
@@ -263,11 +248,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 href={instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-xl text-xs font-medium transition flex items-center gap-1.5 bg-gradient-to-r from-pink-600/20 via-purple-600/20 to-amber-600/20 border border-pink-500/40 text-pink-200 hover:text-white hover:border-pink-300"
+                className="p-2 rounded-xl text-xs font-medium transition flex items-center justify-center bg-gradient-to-r from-pink-600/20 via-purple-600/20 to-amber-600/20 border border-pink-500/40 text-pink-200 hover:text-white hover:border-pink-300"
                 title="Siga @verdadeiraluzcaminho no Instagram"
               >
                 <Instagram className="w-4 h-4 text-pink-400 shrink-0" />
-                <span className="hidden xl:inline text-[11px] font-bold">Instagram</span>
               </a>
 
               {/* Admin Panel Quick Access - Somente visível para administrador autenticado */}
@@ -275,31 +259,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   id="btn-admin-nav"
                   onClick={onOpenAdmin}
-                  className="p-2 rounded-xl text-xs font-medium transition flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30"
+                  className="p-2 rounded-xl text-xs font-medium transition flex items-center justify-center bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30"
                   title="Painel de Controle do Administrador (Conectado)"
                 >
                   <ShieldAlert className="w-4 h-4 text-amber-400" />
-                  <span className="text-[11px] font-bold">ADM</span>
-                </button>
-              )}
-
-              {/* Subscription CTA Pill */}
-              {isPremium ? (
-                <div className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 px-2.5 sm:px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm shrink-0">
-                  <Shield className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Kiwify Premium</span>
-                  <span className="sm:hidden text-[11px]">Premium</span>
-                </div>
-              ) : (
-                <button
-                  id="btn-navbar-upgrade"
-                  onClick={onOpenCheckout}
-                  className="flex items-center gap-1 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-stone-950 font-bold px-2.5 sm:px-3 py-1.5 rounded-xl text-xs shadow-md transition transform active:scale-95 shrink-0"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-stone-900" />
-                  <span className="text-[11px] sm:text-xs whitespace-nowrap">
-                    Assinar Kiwify
-                  </span>
                 </button>
               )}
 

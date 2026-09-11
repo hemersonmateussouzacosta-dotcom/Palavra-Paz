@@ -217,7 +217,7 @@ export class StorageService {
         type: 'meditacao',
         durationSeconds: 300,
         timestamp: yesterday.toISOString(),
-        notes: 'Prática maravilhosa de respiração ao som de harpa celestial.'
+        notes: 'Prática maravilhosa de respiração ao som ambiente celestial.'
       }
     ];
     this.savePracticeLogs(initialLogs);

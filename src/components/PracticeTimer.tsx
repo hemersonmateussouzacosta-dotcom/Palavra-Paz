@@ -231,7 +231,7 @@ export const PracticeTimer: React.FC<PracticeTimerProps> = ({ profile, onLogSave
           <span className="text-stone-400 text-[11px]">Som ambiente:</span>
           {[
             { key: 'none', label: 'Silêncio' },
-            { key: 'celestial', label: 'Harpa' },
+            { key: 'celestial', label: 'Celestial' },
             { key: 'chuva', label: 'Chuva' },
             { key: 'aguas', label: 'Riacho' }
           ].map((snd) => (

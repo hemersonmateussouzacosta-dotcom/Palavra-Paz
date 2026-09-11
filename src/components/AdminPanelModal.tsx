@@ -233,7 +233,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       meditacao: { title: 'Respiração & Serenidade com Cristo', subtitle: '5 min de quietude e oração silenciosa', category: 'Paz Interior' },
       estudo: { title: 'Estudo: Vencendo o Medo pela Palavra', subtitle: 'Passagens chave sobre coragem cristã e paz', category: 'Vida de Fé' },
       cronometro: { title: 'Momento de Intercessão & Louvor', subtitle: '15 min no cronômetro de oração', category: 'Cronômetro Devocional' },
-      audio: { title: 'Áudio do Salmo 23', subtitle: 'Narração de voz acolhedora com harpa celestial', category: 'Áudios Bíblicos' }
+      audio: { title: 'Áudio do Salmo 23', subtitle: 'Narração de voz acolhedora com fundo celestial suave', category: 'Áudios Bíblicos' }
     };
     const sample = sampleItems[type] || sampleItems.salmo;
     StorageService.recordView({
@@ -751,18 +751,16 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 {/* Instagram Community Configuration */}
                 <div className="bg-white border border-stone-200 rounded-2xl p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-serif font-bold text-stone-900 text-sm flex items-center gap-1.5">
-                      <Instagram className="w-4 h-4 text-pink-600" />
-                      <span>Comunidade &amp; Instagram Oficial</span>
-                    </h4>
+                    <div className="flex items-center gap-1.5">
+                      <Instagram className="w-5 h-5 text-pink-600" />
+                    </div>
                     <a
                       href={adminConfig.instagramUrl || 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-pink-600 hover:text-pink-800 font-semibold flex items-center gap-1 hover:underline"
                     >
-                      <span>Abrir perfil</span>
-                      <ExternalLink className="w-3 h-3" />
+                      <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   </div>
 

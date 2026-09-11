@@ -42,11 +42,11 @@ const SPONSOR_ADS: SponsorAd[] = [
     accentColor: 'emerald'
   },
   {
-    id: 'ad-harpa',
+    id: 'ad-louvor',
     tag: 'Música & Adoração',
-    title: 'Harpa Cristã e Hinários de Louvor',
-    description: 'Coleção completa de hinos tradicionais com cifras, orações e partituras para momentos devocionais.',
-    actionText: 'Ver Coleção',
+    title: 'Hinos Sagrados & Cânticos de Louvor',
+    description: 'Coletânea especial de louvores instrumentais e partituras para edificação e adoração cristã.',
+    actionText: 'Conhecer',
     url: 'https://pay.kiwify.com.br/vxSeONK',
     accentColor: 'indigo'
   }

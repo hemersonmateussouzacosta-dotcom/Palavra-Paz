@@ -168,6 +168,92 @@ export const CURATED_PSALMS: Psalm[] = [
       { verseNumber: 5, text: 'Louvai-o com címbalos sonoros; louvai-o com címbalos ressonantes.' },
       { verseNumber: 6, text: 'Todo ser que respira louve ao Senhor. Aleluia!' }
     ]
+  },
+  {
+    number: 19,
+    title: 'A Glória de Deus na Criação e na Sua Lei',
+    theme: 'Louvor Cósmico & Sabedoria',
+    summary: 'Os céus proclamam a glória de Deus e a Sua lei perfeita restaura a alma.',
+    devotionalInsight: 'A criação visível e a revelação das Escrituras testificam juntas o amor e a santidade do Senhor. Que as palavras da nossa boca sejam agradáveis a Ele.',
+    verses: [
+      { verseNumber: 1, text: 'Os céus proclamam a glória de Deus, e o firmamento anuncia as obras das suas mãos.' },
+      { verseNumber: 2, text: 'Um dia discursa a outro dia, e uma noite revela conhecimento a outra noite.' },
+      { verseNumber: 7, text: 'A lei do Senhor é perfeita e restaura a alma; o testemunho do Senhor é fiel e dá sabedoria aos símplices.' },
+      { verseNumber: 8, text: 'Os preceitos do Senhor são retos e alegram o coração; o mandamento do Senhor é puro e ilumina os olhos.' },
+      { verseNumber: 14, text: 'As palavras dos meus lábios e o meditar do meu coração sejam agradáveis na tua presença, Senhor, rocha minha e redentor meu!' }
+    ]
+  },
+  {
+    number: 37,
+    title: 'Confia no Senhor e Descansa',
+    theme: 'Paz & Entrega Diária',
+    summary: 'Entrega o teu caminho ao Senhor, confia Nele, e o mais Ele fará.',
+    devotionalInsight: 'A ansiedade quer nos fazer correr antes da hora. O Salmo 37 nos ensina a descansar no Senhor e esperar com mansidão a Sua intervenção bondosa.',
+    verses: [
+      { verseNumber: 3, text: 'Confia no Senhor e faze o bem; habita na terra e alimenta-te da fidelidade.' },
+      { verseNumber: 4, text: 'Agrada-te do Senhor, e ele satisfará os desejos do teu coração.' },
+      { verseNumber: 5, text: 'Entrega o teu caminho ao Senhor, confia nele, e o mais ele fará.' },
+      { verseNumber: 7, text: 'Descansa no Senhor e espera nele; não te irrites por causa daquele que prospera em seu caminho.' },
+      { verseNumber: 23, text: 'O Senhor firma os passos do homem bom e no seu caminho se compraz;' },
+      { verseNumber: 24, text: 'Se cair, não ficará prostrado, porque o Senhor o segura pela mão.' }
+    ]
+  },
+  {
+    number: 40,
+    title: 'Esperei com Paciência no Senhor',
+    theme: 'Livramento & Novo Cântico',
+    summary: 'Deus tirou Davi de um poço de perdição, pôs os seus pés sobre a rocha e colocou na sua boca um novo cântico.',
+    devotionalInsight: 'Mesmo nos períodos de espera dolorosa, Deus está operando invisivelmente. A paciência em Deus nunca é em vão: Ele sempre nos firma sobre a rocha eterna.',
+    verses: [
+      { verseNumber: 1, text: 'Esperei confiantemente pelo Senhor; ele se inclinou para mim e me ouviu quando clamei por socorro.' },
+      { verseNumber: 2, text: 'Tirou-me de um poço de perdição, de um atoleiro de lama; colocou-me os pés sobre uma rocha e firmou-me os passos.' },
+      { verseNumber: 3, text: 'E me pôs nos lábios um novo cântico, um hino de louvor ao nosso Deus.' },
+      { verseNumber: 5, text: 'Muitas são, Senhor Deus meu, as maravilhas que tens operado e também os teus desígnios para conosco.' },
+      { verseNumber: 17, text: 'Eu sou pobre e necessitado, porém o Senhor cuida de mim; tu és o meu amparo e o meu libertador.' }
+    ]
+  },
+  {
+    number: 63,
+    title: 'A Minha Alma Tem Sede de Ti',
+    theme: 'Intimidade & Comunhão Madrugadora',
+    summary: 'Oração no deserto de Judá: a Tua graça é melhor do que a vida; por isso, os meus lábios Te louvarão.',
+    devotionalInsight: 'Mesmo em terras áridas e cansadas de provação, a comunhão íntima com Deus sacia a nossa alma como com tutano e gordura.',
+    verses: [
+      { verseNumber: 1, text: 'Ó Deus, tu és o meu Deus forte; eu te busco ansiosamente; a minha alma tem sede de ti; meu corpo te almeja, como terra árida, exausta, sem água.' },
+      { verseNumber: 3, text: 'Porque a tua graça é melhor do que a vida; os meus lábios te louvam.' },
+      { verseNumber: 4, text: 'Assim, cumpre-me bendizer-te enquanto eu viver; em teu nome, levanto as mãos.' },
+      { verseNumber: 7, text: 'Porque foste o meu auxílio; à sombra das tuas asas, eu canto de júbilo.' },
+      { verseNumber: 8, text: 'A minha alma apega-se a ti; a tua destra me ampara.' }
+    ]
+  },
+  {
+    number: 84,
+    title: 'Quão Amáveis são os Teus Tabernáculos',
+    theme: 'Saudade de Deus & Peregrinação',
+    summary: 'Vale de Baca transformado em mananciais. Um dia nos Teus átrios vale mais que mil em outro lugar.',
+    devotionalInsight: 'Passar por vales difíceis não significa abandono; quem caminha com Deus transforma locais secos em fontes de bênçãos e vai de força em força.',
+    verses: [
+      { verseNumber: 1, text: 'Quão amáveis são os teus tabernáculos, Senhor dos Exércitos!' },
+      { verseNumber: 2, text: 'A minha alma suspira e desmaia pelos átrios do Senhor; o meu coração e a minha carne exultam pelo Deus vivo!' },
+      { verseNumber: 5, text: 'Bem-aventurado o homem cuja força está em ti, em cujo coração se encontram os caminhos aplanados,' },
+      { verseNumber: 6, text: 'O qual, passando pelo vale árido, faz dele um manancial; de bênçãos o cobre a primeira chuva.' },
+      { verseNumber: 10, text: 'Pois um dia nos teus átrios vale mais que mil; prefiro estar à porta da casa do meu Deus a habitar nas tendas da perversidade.' },
+      { verseNumber: 11, text: 'Porque o Senhor Deus é sol e escudo; o Senhor dá graça e glória; nenhum bem sonega aos que andam retamente.' }
+    ]
+  },
+  {
+    number: 126,
+    title: 'Restauração e Cântico de Alegria',
+    theme: 'Vitória & Colheita de Júbilo',
+    summary: 'Quando o Senhor restaurou a nossa sorte, ficamos como quem sonha. Os que com lágrimas semeiam, com júbilo colherão.',
+    devotionalInsight: 'As lágrimas derramadas no solo da oração não são esquecidas por Deus. Há uma colheita certa de júbilo preparada para a sua fidelidade.',
+    verses: [
+      { verseNumber: 1, text: 'Quando o Senhor restaurou a sorte de Sião, ficamos como quem sonha.' },
+      { verseNumber: 2, text: 'Então, a nossa boca se encheu de riso, e a nossa língua, de júbilo; então, entre as nações se dizia: Grandes coisas o Senhor tem feito por eles.' },
+      { verseNumber: 3, text: 'Com efeito, grandes coisas fez o Senhor por nós; por isso, estamos alegres.' },
+      { verseNumber: 5, text: 'Os que com lágrimas semeiam com júbilo ceifarão.' },
+      { verseNumber: 6, text: 'Quem sai andando e chorando, enquanto semeia, voltará com júbilo, trazendo os seus feixes.' }
+    ]
   }
 ];
 
@@ -202,4 +288,25 @@ export function getAll150PsalmsDirectory(): { number: number; title: string; the
       isCurated: false
     };
   });
+}
+
+// Dedicated function to retrieve the Psalm of the Day based on a calendar date
+export function getDailyPsalm(dateStr?: string): Psalm {
+  const targetDate = dateStr ? new Date(dateStr + 'T12:00:00') : new Date();
+  
+  // Calculate day-of-year index
+  const startOfYear = new Date(targetDate.getFullYear(), 0, 0);
+  const diff = targetDate.getTime() - startOfYear.getTime();
+  const oneDay = 1000 * 60 * 60 * 24;
+  const dayOfYear = Math.floor(diff / oneDay);
+
+  // Map to curated psalms in rotation, or to the 150 psalms
+  const index = Math.abs(dayOfYear) % CURATED_PSALMS.length;
+  const psalm = CURATED_PSALMS[index];
+  if (psalm) {
+    return psalm;
+  }
+
+  // Fallback to Psalm 23 or 91
+  return CURATED_PSALMS[1] || CURATED_PSALMS[0];
 }
