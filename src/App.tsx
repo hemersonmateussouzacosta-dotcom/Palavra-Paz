@@ -184,6 +184,8 @@ export default function App() {
               adsEnabled={adminConfig.adsEnabled !== false}
               adsenseClientId={adminConfig.adsenseClientId}
               adsenseSlotId={adminConfig.adsenseSlotId}
+              adsenseLayoutKey={adminConfig.adsenseLayoutKey}
+              adsenseFormat={adminConfig.adsenseFormat}
               onOpenCheckout={() => setIsCheckoutOpen(true)}
               variant="horizontal"
             />
@@ -228,6 +230,19 @@ export default function App() {
                 <ExternalLink className="w-3.5 h-3.5 text-white/80" />
               </a>
             </section>
+
+            {/* Second Discreet Sponsored Ad Banner (Google AdSense Slot 2) */}
+            <AdBanner
+              isPremium={profile.subscriptionStatus === 'premium'}
+              isAdFree={profile.subscriptionStatus === 'ad_free'}
+              adsEnabled={adminConfig.adsEnabled !== false}
+              adsenseClientId={adminConfig.adsenseClientId}
+              adsenseSlotId={adminConfig.adsenseSlotId2 || '3625424319'}
+              adsenseLayoutKey={adminConfig.adsenseLayoutKey2 || '-ef+6k-30-ac+ty'}
+              adsenseFormat={adminConfig.adsenseFormat}
+              onOpenCheckout={() => setIsCheckoutOpen(true)}
+              variant="horizontal"
+            />
           </div>
         )}
 
@@ -254,7 +269,9 @@ export default function App() {
               isAdFree={profile.subscriptionStatus === 'ad_free'}
               adsEnabled={adminConfig.adsEnabled !== false}
               adsenseClientId={adminConfig.adsenseClientId}
-              adsenseSlotId={adminConfig.adsenseSlotId}
+              adsenseSlotId={adminConfig.adsenseSlotId2 || '3625424319'}
+              adsenseLayoutKey={adminConfig.adsenseLayoutKey2 || '-ef+6k-30-ac+ty'}
+              adsenseFormat={adminConfig.adsenseFormat}
               onOpenCheckout={() => setIsCheckoutOpen(true)}
               variant="card"
             />

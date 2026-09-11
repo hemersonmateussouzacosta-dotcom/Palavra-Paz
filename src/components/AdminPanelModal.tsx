@@ -691,12 +691,26 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                             setAdminConfig({ ...adminConfig, adsenseClientId: e.target.value })
                           }
                           className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono"
-                          placeholder="ca-pub-1234567890123456"
+                          placeholder="ca-pub-9818196034021498"
                         />
                       </div>
                       <div>
                         <label className="block text-[11px] font-semibold text-stone-700 mb-1">
-                          Bloco / Slot ID do Anúncio:
+                          Formato dos Anúncios:
+                        </label>
+                        <input
+                          type="text"
+                          value={adminConfig.adsenseFormat || ''}
+                          onChange={(e) =>
+                            setAdminConfig({ ...adminConfig, adsenseFormat: e.target.value })
+                          }
+                          className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono"
+                          placeholder="fluid"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                          Anúncio 1 - Slot ID:
                         </label>
                         <input
                           type="text"
@@ -705,7 +719,49 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                             setAdminConfig({ ...adminConfig, adsenseSlotId: e.target.value })
                           }
                           className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono"
-                          placeholder="1234567890"
+                          placeholder="5768371921"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                          Anúncio 1 - Layout Key:
+                        </label>
+                        <input
+                          type="text"
+                          value={adminConfig.adsenseLayoutKey || ''}
+                          onChange={(e) =>
+                            setAdminConfig({ ...adminConfig, adsenseLayoutKey: e.target.value })
+                          }
+                          className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono"
+                          placeholder="-gw-3+1f-3d+2z"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                          Anúncio 2 - Slot ID:
+                        </label>
+                        <input
+                          type="text"
+                          value={adminConfig.adsenseSlotId2 || ''}
+                          onChange={(e) =>
+                            setAdminConfig({ ...adminConfig, adsenseSlotId2: e.target.value })
+                          }
+                          className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono"
+                          placeholder="3625424319"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                          Anúncio 2 - Layout Key:
+                        </label>
+                        <input
+                          type="text"
+                          value={adminConfig.adsenseLayoutKey2 || ''}
+                          onChange={(e) =>
+                            setAdminConfig({ ...adminConfig, adsenseLayoutKey2: e.target.value })
+                          }
+                          className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-xl bg-white font-mono"
+                          placeholder="-ef+6k-30-ac+ty"
                         />
                       </div>
                     </div>

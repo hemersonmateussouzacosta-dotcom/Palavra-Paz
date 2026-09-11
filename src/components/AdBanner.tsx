@@ -7,6 +7,8 @@ interface AdBannerProps {
   adsEnabled?: boolean;
   adsenseClientId?: string;
   adsenseSlotId?: string;
+  adsenseLayoutKey?: string;
+  adsenseFormat?: string;
   onOpenCheckout?: () => void;
   variant?: 'horizontal' | 'card';
   className?: string;
@@ -56,15 +58,17 @@ export const AdBanner: React.FC<AdBannerProps> = ({
   isPremium = false,
   isAdFree = false,
   adsEnabled = true,
-  adsenseClientId,
-  adsenseSlotId,
+  adsenseClientId = 'ca-pub-9818196034021498',
+  adsenseSlotId = '6092163378',
+  adsenseLayoutKey = '-gw-3+1f-3d+2z',
+  adsenseFormat = 'fluid',
   onOpenCheckout,
   variant = 'horizontal',
   className = ''
 }) => {
   const [dismissed, setDismissed] = useState(false);
 
-  // If Google AdSense client ID is configured, load the AdSense script tag once
+  // If Google AdSense client ID is configured, ensure script and initialize ad slot
   useEffect(() => {
     if (adsenseClientId && typeof window !== 'undefined' && !isPremium && !isAdFree && adsEnabled) {
       const existingScript = document.getElementById('google-adsense-script');
@@ -76,14 +80,19 @@ export const AdBanner: React.FC<AdBannerProps> = ({
         script.crossOrigin = 'anonymous';
         document.head.appendChild(script);
       }
-      try {
-        // @ts-ignore
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (e) {
-        // Ignora caso o AdSense bloqueie repetição em dev
-      }
+      
+      const timer = setTimeout(() => {
+        try {
+          // @ts-ignore
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {
+          // Ignora caso o AdSense bloqueie repetição em dev ou se o bloco já tiver sido processado
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
     }
-  }, [adsenseClientId, isPremium, isAdFree, adsEnabled]);
+  }, [adsenseClientId, adsenseSlotId, isPremium, isAdFree, adsEnabled]);
 
   // Pick an ad based on date or default to first
   const dayIndex = typeof window !== 'undefined' ? new Date().getDate() % SPONSOR_ADS.length : 0;
@@ -129,9 +138,9 @@ export const AdBanner: React.FC<AdBannerProps> = ({
             className="adsbygoogle"
             style={{ display: 'block', minWidth: '250px', width: '100%' }}
             data-ad-client={adsenseClientId}
-            data-ad-slot={adsenseSlotId || ''}
-            data-ad-format="auto"
-            data-full-width-responsive="true"
+            data-ad-slot={adsenseSlotId || '6092163378'}
+            data-ad-format={adsenseFormat || 'fluid'}
+            data-ad-layout-key={adsenseLayoutKey || '-gw-3+1f-3d+2z'}
           />
         </div>
       </aside>

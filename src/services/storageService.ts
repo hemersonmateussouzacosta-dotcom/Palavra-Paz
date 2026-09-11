@@ -14,8 +14,12 @@ export const DEFAULT_ADMIN_CONFIG: AppAdminConfig = {
   subscriptionPrice: '14,90',
   adFreeCheckoutUrl: 'https://pay.kiwify.com.br/vxSeONK',
   adFreePrice: '4,90',
-  adsenseClientId: '',
-  adsenseSlotId: '',
+  adsenseClientId: 'ca-pub-9818196034021498',
+  adsenseSlotId: '5768371921',
+  adsenseLayoutKey: '-gw-3+1f-3d+2z',
+  adsenseFormat: 'fluid',
+  adsenseSlotId2: '3625424319',
+  adsenseLayoutKey2: '-ef+6k-30-ac+ty',
   announcementBanner: 'Bem-vindo(a) ao Palavra & Paz! Um novo devocional diário é preparado a cada amanhecer.',
   announcementActive: false,
   instagramUrl: 'https://www.instagram.com/verdadeiraluzcaminho?stkn=YXB6ZG51czJuZjNm',
@@ -41,11 +45,23 @@ export class StorageService {
         if (!parsed.adFreePrice) {
           parsed.adFreePrice = DEFAULT_ADMIN_CONFIG.adFreePrice;
         }
-        if (parsed.adsenseClientId === undefined) {
+        if (!parsed.adsenseClientId) {
           parsed.adsenseClientId = DEFAULT_ADMIN_CONFIG.adsenseClientId;
         }
-        if (parsed.adsenseSlotId === undefined) {
+        if (!parsed.adsenseSlotId || parsed.adsenseSlotId === '6092163378') {
           parsed.adsenseSlotId = DEFAULT_ADMIN_CONFIG.adsenseSlotId;
+        }
+        if (!parsed.adsenseLayoutKey) {
+          parsed.adsenseLayoutKey = DEFAULT_ADMIN_CONFIG.adsenseLayoutKey;
+        }
+        if (!parsed.adsenseFormat) {
+          parsed.adsenseFormat = DEFAULT_ADMIN_CONFIG.adsenseFormat;
+        }
+        if (!parsed.adsenseSlotId2) {
+          parsed.adsenseSlotId2 = DEFAULT_ADMIN_CONFIG.adsenseSlotId2;
+        }
+        if (!parsed.adsenseLayoutKey2) {
+          parsed.adsenseLayoutKey2 = DEFAULT_ADMIN_CONFIG.adsenseLayoutKey2;
         }
         if (!parsed.instagramUrl) {
           parsed.instagramUrl = DEFAULT_ADMIN_CONFIG.instagramUrl;

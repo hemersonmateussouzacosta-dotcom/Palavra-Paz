@@ -99,6 +99,10 @@ export interface AppAdminConfig {
   adFreePrice?: string;
   adsenseClientId?: string;
   adsenseSlotId?: string;
+  adsenseLayoutKey?: string;
+  adsenseFormat?: string;
+  adsenseSlotId2?: string;
+  adsenseLayoutKey2?: string;
   announcementBanner: string;
   announcementActive: boolean;
   instagramUrl?: string;
